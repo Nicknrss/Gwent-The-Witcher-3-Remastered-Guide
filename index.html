@@ -4,7 +4,159 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gwent — The Witcher 3 Remastered</title>
+/* ===== NAVEGAÇÃO PRINCIPAL ===== */
 
+.site-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 5%;
+    background: rgba(10, 16, 24, 0.82);
+    border-bottom: 1px solid rgba(197, 166, 106, 0.2);
+}
+
+.site-logo {
+    display: block;
+    width: 150px;
+    max-height: 85px;
+    object-fit: contain;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+}
+
+.site-nav button,
+.language-menu button {
+    border: none;
+    background: transparent;
+    color: #eee8dc;
+    cursor: pointer;
+}
+
+.site-nav button {
+    padding: 10px 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.site-nav button:hover,
+.site-nav button.active {
+    color: #c5a66a;
+}
+
+.language-picker {
+    position: relative;
+}
+
+.language-trigger {
+    min-width: 48px;
+    font-size: 23px;
+}
+
+.language-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 160px;
+    padding: 8px;
+    background: #151a20;
+    border: 1px solid #45483d;
+    border-radius: 6px;
+}
+
+.language-menu button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    text-align: left;
+}
+
+.language-menu button:hover {
+    background: #292e26;
+    color: #c5a66a;
+}
+
+.language-menu[hidden] {
+    display: none;
+}
+
+/* ===== BOTÃO DO MENU LATERAL ===== */
+
+.sidebar-toggle {
+    display: none;
+    font-size: 25px;
+    padding: 8px 12px;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 760px) {
+    .site-header {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .site-logo {
+        width: 105px;
+        max-height: 65px;
+    }
+
+    .sidebar-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .site-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(290px, 85vw);
+        padding: 90px 24px 30px;
+        background: #10151b;
+        border-right: 1px solid #45483d;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 8px;
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+        z-index: 30;
+    }
+
+    .site-nav.open {
+        transform: translateX(0);
+    }
+
+    .site-nav button {
+        padding: 16px 10px;
+        text-align: left;
+        border-bottom: 1px solid rgba(197, 166, 106, 0.15);
+    }
+
+    .language-trigger {
+        font-size: 21px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-nav {
+        transition: none;
+    }
+}
 <style>
 :root {
     --bg: #101310;
@@ -265,17 +417,69 @@ footer {
 </head>
 
 <body>
-<header>
-    <div class="eyebrow">The Witcher 3 Remastered</div>
-    <h1 id="title">Guia de Cartas de Gwent</h1>
-    <p class="subtitle" id="subtitle">
-        Sua coleção de cartas. Marque as que você já conseguiu!
-    </p>
+<header class="site-header">
 
-    <div class="language-bar">
-        <button class="active" id="ptButton" type="button">🇧🇷 Português</button>
-        <button id="enButton" type="button">🇺🇸 English</button>
+    <button
+        class="sidebar-toggle"
+        id="sidebarToggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="siteNav"
+    >
+        ☰
+    </button>
+
+    <a href="#inicio" aria-label="Página inicial">
+        <img
+    src="images/site/logo.png"
+    alt="The Witcher 3 Wild Hunt Remastered"
+    class="site-logo"
+>
+        >
+    </a>
+
+    <nav class="site-nav" id="siteNav" aria-label="Navegação principal">
+        <button type="button" data-page="home" class="active">
+            Início
+        </button>
+
+        <button type="button" data-page="collection">
+            Minha coleção
+        </button>
+
+        <button type="button" data-page="tutorial">
+            Tutorial
+        </button>
+
+        <button type="button" data-page="guides">
+            Guias
+        </button>
+    </nav>
+
+    <div class="language-picker">
+        <button
+            class="language-trigger"
+            id="languageTrigger"
+            type="button"
+            aria-label="Selecionar idioma"
+            aria-expanded="false"
+            aria-controls="languageMenu"
+        >
+            🇧🇷 ▾
+        </button>
+
+        <div class="language-menu" id="languageMenu" hidden>
+            <button type="button" data-language="pt">
+                🇧🇷 Português
+            </button>
+
+            <button type="button" data-language="en">
+                🇺🇸 English
+            </button>
+        </div>
     </div>
+
 </header>
 
 <main>
