@@ -2410,7 +2410,11 @@ function renderCards() {
             (selectedFilter === "pending" && !isCollected);
         const sourcePath = (card.sourcePath || "").toLowerCase();
 
-const isNeutral = card.faction === "neutral";
+const isStartingCard = card.group === "starting";
+
+const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+
+const isNeutral = isStartingCard || isNeutralCollection;
 
 const neutralVariant =
     sourcePath.includes("/neutros/nilfi neutros/") ||
@@ -2427,9 +2431,13 @@ const neutralVariant =
                     ? "scoiatael"
                     : null;
 
+const isNilfgaardNeutral =
+    sourcePath.includes("/iniciais/iniciais nilfi/") ||
+    sourcePath.includes("/completo/neutros/nilfi neutros/");
+
 const matchesFaction =
     selectedFaction === "all"
-        ? (!isNeutral || neutralVariant === "nilfgaard")
+        ? (!isNeutral || isNilfgaardNeutral)
         : isNeutral
             ? neutralVariant === selectedFaction
             : card.faction === selectedFaction;
@@ -2496,8 +2504,55 @@ return matchesSearch && matchesStatus && matchesFaction;
 
 function updateProgress() {
     const t = translations[language];
-    const total = cards.length;
-    const count = cards.filter(card => Boolean(collected[card.id])).length;
+
+    const selectedFaction = faction.value;
+    const selectedGroup = groupFilter.value;
+
+    const visibleCards = cards.filter(card => {
+        const sourcePath = (card.sourcePath || "").toLowerCase();
+
+        const isStartingCard = card.group === "starting";
+        const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+        const isNeutral = isStartingCard || isNeutralCollection;
+
+        const isNilfgaardNeutral =
+            sourcePath.includes("/iniciais/iniciais nilfi/") ||
+            sourcePath.includes("/completo/neutros/nilfi neutros/");
+
+        const neutralVariant =
+            sourcePath.includes("/neutros/nilfi neutros/") ||
+            sourcePath.includes("/iniciais/iniciais nilfi/")
+                ? "nilfgaard"
+                : sourcePath.includes("/neutros/monstros neutros/") ||
+                  sourcePath.includes("/iniciais/iniciais monstros/")
+                    ? "monsters"
+                    : sourcePath.includes("/neutros/norte neutros/") ||
+                      sourcePath.includes("/iniciais/iniciais norte/")
+                        ? "north"
+                        : sourcePath.includes("/neutros/elfos neutros/") ||
+                          sourcePath.includes("/iniciais/iniciais scoiatel/")
+                            ? "scoiatael"
+                            : null;
+
+        const matchesFaction =
+            selectedFaction === "all"
+                ? (!isNeutral || isNilfgaardNeutral)
+                : isNeutral
+                    ? neutralVariant === selectedFaction
+                    : card.faction === selectedFaction;
+
+        const matchesGroup =
+            selectedGroup === "all" || card.group === selectedGroup;
+
+        return matchesFaction && matchesGroup;
+    });
+
+    const total = visibleCards.length;
+
+    const count = visibleCards.filter(card =>
+        Boolean(collected[card.id])
+    ).length;
+
     const percent = total ? Math.round(count / total * 100) : 0;
 
     document.getElementById("progressLabel").textContent = t.progress;
