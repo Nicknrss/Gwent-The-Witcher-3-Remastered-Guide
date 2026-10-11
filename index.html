@@ -2396,7 +2396,64 @@ function makeCardImage(card) {
     return "data:image/svg+xml;charset=UTF-8," +
         encodeURIComponent(svg);
 }
+function getVisibleCards() {
+    const query = search.value.trim().toLocaleLowerCase();
+    const selectedFilter = filter.value;
+    const selectedFaction = faction.value;
+    const selectedGroup = groupFilter.value;
 
+    return cards.filter(card => {
+        const name = card[language].toLocaleLowerCase();
+        const matchesSearch = name.includes(query);
+        const isCollected = Boolean(collected[card.id]);
+
+        const matchesStatus =
+            selectedFilter === "all" ||
+            (selectedFilter === "collected" && isCollected) ||
+            (selectedFilter === "pending" && !isCollected);
+
+        const sourcePath = (card.sourcePath || "").toLowerCase();
+        const isStartingCard = card.group === "starting";
+        const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+        const isNeutral = isStartingCard || isNeutralCollection;
+
+        const isNilfgaardNeutral =
+            sourcePath.includes("/iniciais/iniciais nilfi/") ||
+            sourcePath.includes("/completo/neutros/nilfi neutros/");
+
+        const neutralVariant =
+            sourcePath.includes("/neutros/nilfi neutros/") ||
+            sourcePath.includes("/iniciais/iniciais nilfi/")
+                ? "nilfgaard"
+                : sourcePath.includes("/neutros/monstros neutros/") ||
+                  sourcePath.includes("/iniciais/iniciais monstros/")
+                    ? "monsters"
+                    : sourcePath.includes("/neutros/norte neutros/") ||
+                      sourcePath.includes("/iniciais/iniciais norte/")
+                        ? "north"
+                        : sourcePath.includes("/neutros/elfos neutros/") ||
+                          sourcePath.includes("/iniciais/iniciais scoiatel/")
+                            ? "scoiatael"
+                            : null;
+
+        const matchesFaction =
+            selectedFaction === "all"
+                ? (!isNeutral || isNilfgaardNeutral)
+                : neutralVariant !== null
+                    ? neutralVariant === selectedFaction
+                    : card.faction === selectedFaction;
+
+        const matchesGroup =
+            selectedGroup === "all" || card.group === selectedGroup;
+
+        return (
+            matchesSearch &&
+            matchesStatus &&
+            matchesFaction &&
+            matchesGroup
+        );
+    });
+}
 function renderCards() {
     const t = translations[language];
     const query = search.value.trim().toLocaleLowerCase();
@@ -2538,6 +2595,64 @@ return matchesSearch && matchesStatus && matchesFaction;
 
     updateProgress();
 }
+    const toggleAllButton = document.getElementById("toggleAllButton");
+
+function updateToggleAllButton() {
+    const visibleCards = getVisibleCards();
+
+    const allCollected =
+        visibleCards.length > 0 &&
+        visibleCards.every(card => Boolean(collected[card.id]));
+
+    toggleAllButton.textContent = allCollected
+        ? "Desmarcar todas"
+        : "Selecionar todas";
+
+    toggleAllButton.disabled = visibleCards.length === 0;
+}
+
+toggleAllButton.addEventListener("click", () => {
+    const visibleCards = getVisibleCards();
+
+    if (visibleCards.length === 0) return;
+
+    const allCollected =
+        visibleCards.every(card => Boolean(collected[card.id]));
+
+    const newState = !allCollected;
+
+    visibleCards.forEach(card => {
+        const sourcePath = (card.sourcePath || "").toLowerCase();
+        const isNeutral =
+            card.group === "starting" ||
+            sourcePath.includes("/completo/neutros/");
+
+        if (isNeutral) {
+            const cardName = (card.pt || "").trim().toLocaleLowerCase();
+
+            cards.forEach(otherCard => {
+                const otherPath = (otherCard.sourcePath || "").toLowerCase();
+
+                const otherIsNeutral =
+                    otherCard.group === "starting" ||
+                    otherPath.includes("/completo/neutros/");
+
+                const otherName =
+                    (otherCard.pt || "").trim().toLocaleLowerCase();
+
+                if (otherIsNeutral && otherName === cardName) {
+                    collected[otherCard.id] = newState;
+                }
+            });
+        } else {
+            collected[card.id] = newState;
+        }
+    });
+
+    saveProgress();
+    renderCards();
+    updateToggleAllButton();
+});
 
 function updateProgress() {
     const t = translations[language];
