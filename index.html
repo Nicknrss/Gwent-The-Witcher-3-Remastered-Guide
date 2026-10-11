@@ -321,7 +321,11 @@ footer {
             <option value="scoiatael">Scoia'tael</option>
             <option value="monsters">Monstros</option>
             <option value="skellige">Skellige</option>
-        </select>
+        </select>   
+        
+        <button id="toggleAllButton" type="button">
+            Selecionar todas
+        </button>
     </section>
 
     <h2 class="section-title" id="cardsHeading">Coleção de cartas</h2>
@@ -2491,10 +2495,43 @@ return matchesSearch && matchesStatus && matchesFaction;
         button.append(check, img, name, status);
 
         button.addEventListener("click", () => {
-            collected[card.id] = !collected[card.id];
-            saveProgress();
-            renderCards();
+    const sourcePath = (card.sourcePath || "").toLowerCase();
+
+    const isStartingCard = card.group === "starting";
+    const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+    const isNeutral = isStartingCard || isNeutralCollection;
+
+    // Define o novo estado da carta
+    const newState = !collected[card.id];
+
+    if (isNeutral) {
+        // Identifica as versões da mesma carta pelo nome
+        const cardName = (card.pt || "").trim().toLocaleLowerCase();
+
+        const relatedCards = cards.filter(otherCard => {
+            const otherPath = (otherCard.sourcePath || "").toLowerCase();
+
+            const otherIsNeutral =
+                otherCard.group === "starting" ||
+                otherPath.includes("/completo/neutros/");
+
+            const otherName = (otherCard.pt || "").trim().toLocaleLowerCase();
+
+            return otherIsNeutral && otherName === cardName;
         });
+
+        // Atualiza todas as versões da carta neutra
+        relatedCards.forEach(otherCard => {
+            collected[otherCard.id] = newState;
+        });
+    } else {
+        // Cartas exclusivas continuam com progresso independente
+        collected[card.id] = newState;
+    }
+
+    saveProgress();
+    renderCards();
+});
 
         grid.appendChild(button);
     });
