@@ -2408,10 +2408,33 @@ function renderCards() {
             selectedFilter === "all" ||
             (selectedFilter === "collected" && isCollected) ||
             (selectedFilter === "pending" && !isCollected);
-        const matchesFaction =
-            selectedFaction === "all" || card.faction === selectedFaction;
+        const sourcePath = (card.sourcePath || "").toLowerCase();
 
-        return matchesSearch && matchesStatus && matchesFaction;
+const isNeutral = card.faction === "neutral";
+
+const neutralVariant =
+    sourcePath.includes("/neutros/nilfi neutros/") ||
+    sourcePath.includes("/iniciais/iniciais nilfi/")
+        ? "nilfgaard"
+        : sourcePath.includes("/neutros/monstros neutros/") ||
+          sourcePath.includes("/iniciais/iniciais monstros/")
+            ? "monsters"
+            : sourcePath.includes("/neutros/norte neutros/") ||
+              sourcePath.includes("/iniciais/iniciais norte/")
+                ? "north"
+                : sourcePath.includes("/neutros/elfos neutros/") ||
+                  sourcePath.includes("/iniciais/iniciais scoiatel/")
+                    ? "scoiatael"
+                    : null;
+
+const matchesFaction =
+    selectedFaction === "all"
+        ? (!isNeutral || neutralVariant === "nilfgaard")
+        : isNeutral
+            ? neutralVariant === selectedFaction
+            : card.faction === selectedFaction;
+
+return matchesSearch && matchesStatus && matchesFaction;
     });
 
     grid.innerHTML = "";
