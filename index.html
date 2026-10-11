@@ -2442,7 +2442,7 @@ const isNilfgaardNeutral =
 const matchesFaction =
     selectedFaction === "all"
         ? (!isNeutral || isNilfgaardNeutral)
-        : isNeutral
+        : neutralVariant !== null
             ? neutralVariant === selectedFaction
             : card.faction === selectedFaction;
 
