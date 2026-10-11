@@ -370,13 +370,12 @@ const cards = [
         color: "#a6ad94"
     },
     {
-    id: "frio-congelante",
-    pt: "Frio Congelante",
-    en: "Biting Frost",
-    faction: "neutral",
-    image: "images/frio-congelante.png",
-    category: "weather"
-},
+        id: "frio-congelante",
+        pt: "Frio Congelante",
+        en: "Biting Frost",
+        faction: "neutral",
+        image: "images/frio-congelante.png",
+        category: "weather"
 ];
 
 const translations = {
@@ -464,25 +463,9 @@ function makeCardImage(card) {
 
     const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="300" height="400">
-            <defs>
-                <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="${card.color || "#777777"}"/>
-                    <stop offset="100%" stop-color="#22251e"/>
-                </linearGradient>
-            </defs>
-            <rect width="300" height="400" rx="12" fill="url(#bg)"/>
-            <rect x="12" y="12" width="276" height="376" rx="8"
-                fill="none" stroke="#e4d4a8" stroke-width="3"/>
-            <circle cx="150" cy="145" r="75"
-                fill="#171b17" fill-opacity=".55"
-                stroke="#e4d4a8" stroke-width="3"/>
-            <path d="M115 145 L150 85 L185 145 L150 205 Z"
-                fill="none" stroke="#e4d4a8" stroke-width="4"/>
-            <text x="150" y="275" text-anchor="middle"
-                font-family="Georgia,serif" font-size="23"
-                fill="#fff4d7">${card.power || ""}</text>
-            <text x="150" y="325" text-anchor="middle"
-                font-family="Georgia,serif" font-size="15"
+            <rect width="300" height="400" rx="12" fill="${card.color || "#777777"}"/>
+            <text x="150" y="200" text-anchor="middle"
+                font-family="Georgia,serif" font-size="20"
                 fill="#fff4d7">GWENT</text>
         </svg>
     `;
