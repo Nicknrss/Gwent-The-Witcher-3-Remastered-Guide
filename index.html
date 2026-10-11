@@ -368,7 +368,15 @@ const cards = [
         faction: "nilfgaard",
         power: 10,
         color: "#a6ad94"
-    }
+    },
+    {
+    id: "frio-congelante",
+    pt: "Frio Congelante",
+    en: "Biting Frost",
+    faction: "neutral",
+    image: "images/frio-congelante.png",
+    category: "weather"
+},
 ];
 
 const translations = {
@@ -450,11 +458,15 @@ function saveProgress() {
 }
 
 function makeCardImage(card) {
+    if (card.image) {
+        return card.image;
+    }
+
     const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="300" height="400">
             <defs>
                 <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="${card.color}"/>
+                    <stop offset="0%" stop-color="${card.color || "#777777"}"/>
                     <stop offset="100%" stop-color="#22251e"/>
                 </linearGradient>
             </defs>
@@ -468,13 +480,15 @@ function makeCardImage(card) {
                 fill="none" stroke="#e4d4a8" stroke-width="4"/>
             <text x="150" y="275" text-anchor="middle"
                 font-family="Georgia,serif" font-size="23"
-                fill="#fff4d7">${card.power} POWER</text>
+                fill="#fff4d7">${card.power || ""}</text>
             <text x="150" y="325" text-anchor="middle"
                 font-family="Georgia,serif" font-size="15"
                 fill="#fff4d7">GWENT</text>
         </svg>
     `;
-    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+
+    return "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(svg);
 }
 
 function renderCards() {
