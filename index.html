@@ -3294,7 +3294,10 @@ function getVisibleCards() {
         const matchesFaction = selectedFaction === "leaders"
             ? isLeader
             : selectedFaction === "neutral"
-                ? isNeutralCollection && neutralVariant === "nilfgaard"
+    ? (
+        (isNeutralCollection && neutralVariant === "nilfgaard") ||
+        (isWeatherCard(card) && neutralVariant === "nilfgaard")
+    )
                 : selectedFaction === "all"
                     ? (neutralVariant === null || neutralVariant === "nilfgaard" || (card.group === "starting" && card.faction === "north" && isInitialCardVisible(card)))
                     : isLeader
@@ -3337,7 +3340,10 @@ const leaderFaction = card.leaderFaction || card.factionBeforeLeader || card.ori
 const matchesFaction = selectedFaction === "leaders"
     ? isLeader
     : selectedFaction === "neutral"
-        ? isNeutralCollection && neutralVariant === "nilfgaard"
+    ? (
+        (isNeutralCollection && neutralVariant === "nilfgaard") ||
+        (isWeatherCard(card) && neutralVariant === "nilfgaard")
+    )
         : selectedFaction === "all"
             ? (neutralVariant === null || neutralVariant === "nilfgaard" || (card.group === "starting" && card.faction === "north" && isInitialCardVisible(card)))
             : isLeader
