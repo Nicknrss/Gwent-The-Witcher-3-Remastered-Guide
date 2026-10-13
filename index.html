@@ -1,0 +1,3207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gwent — The Witcher 3 Remastered</title>
+<style>
+:root {
+    --bg: #050607;
+    --panel: #19191b;
+    --card-border: #75634d;
+    --gold: #c5a66a;
+    --text: #eee8dc;
+    --muted: #a7a99f;
+    --green: #6dbb75;
+    --border: #38383b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(ellipse at 12% 18%, rgba(115,104,87,.15), transparent 30%), radial-gradient(ellipse at 86% 72%, rgba(83,91,99,.13), transparent 34%), repeating-linear-gradient(135deg, rgba(255,255,255,.012) 0 1px, transparent 1px 7px), #09090b;
+    color: var(--text);
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+header {
+    text-align: center;
+    padding: 38px 16px 28px;
+    background: linear-gradient(#111214, var(--bg));
+    border-bottom: 1px solid var(--border);
+}
+
+.eyebrow {
+    color: var(--gold);
+    letter-spacing: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+h1 {
+    margin: 14px 0 8px;
+    font-size: clamp(26px, 5vw, 44px);
+    text-transform: uppercase;
+}
+
+.subtitle {
+    color: var(--muted);
+    margin: 0 auto;
+    max-width: 650px;
+    line-height: 1.6;
+}
+
+.language-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 22px;
+}
+
+button, select, input {
+    font: inherit;
+}
+
+button, select, input {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 13px;
+}
+
+button {
+    background: #292e26;
+    color: var(--text);
+    cursor: pointer;
+}
+
+button:hover {
+    border-color: var(--gold);
+}
+
+button.active {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+main {
+    position: relative;
+    isolation: isolate;
+    max-width: 1200px;
+    padding: 24px 16px 60px;
+    margin: auto;
+}
+
+.progress-panel {
+    background: #111214;
+    border: 1px solid #333438;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.progress-heading {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.progress-heading strong {
+    color: var(--gold);
+    font-size: 20px;
+}
+
+.progress-track {
+    height: 12px;
+    border-radius: 20px;
+    background: #080a08;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0;
+    background: var(--green);
+    transition: width .25s;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+input, select {
+    background: var(--panel);
+    color: var(--text);
+}
+
+#search {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.section-title {
+    color: var(--gold);
+    font-size: 22px;
+    margin: 24px 0 16px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    position: relative;
+    padding: 8px;
+    background: linear-gradient(145deg, #222124, #171719);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .2s, border-color .2s;
+    text-align: center;
+    color: var(--text);
+    min-width: 0;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: var(--gold);
+}
+
+.card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #252529;
+    filter: grayscale(1);
+    opacity: .42;
+    transition: filter .25s, opacity .25s;
+}
+
+.card.collected img {
+    filter: grayscale(0);
+    opacity: 1;
+}
+
+.card-name {
+    display: block;
+    padding: 10px 2px 4px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.card-status {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    padding-bottom: 5px;
+}
+
+.card.collected {
+    border-color: var(--card-border);
+}
+
+.card.collected .card-status {
+    color: var(--green);
+}
+
+.checkmark {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--green);
+    color: #071007;
+    border: 2px solid #e6f5df;
+    border-radius: 50%;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.card.collected .checkmark {
+    display: flex;
+}
+
+.empty {
+    color: var(--muted);
+    padding: 28px 0;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+footer {
+    text-align: center;
+    border-top: 1px solid var(--border);
+    padding: 22px 12px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+@media (max-width: 480px) {
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .progress-panel {
+        padding: 15px;
+    }
+}
+    
+/* Tema inspirado no tabuleiro e nas cartas de Gwent */
+body { background-color:#09090b; }
+#collectionPage { background: radial-gradient(ellipse at 50% 0%, rgba(125,103,73,.09), transparent 55%); }
+#collectionPage::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.14; background: radial-gradient(ellipse at 10% 40%, transparent 0 18%, rgba(130,120,105,.12) 18.2%, transparent 38%), radial-gradient(ellipse at 90% 65%, transparent 0 20%, rgba(130,120,105,.10) 20.2%, transparent 42%); }
+.card { box-shadow: inset 0 0 0 1px rgba(220,195,153,.035); }
+.card.collected { border-color:#8c7655; }
+
+.site-header { background: rgba(5,6,7,.94); border-bottom: 1px solid #29292c; }
+.progress-heading strong { color: #e3bd55; }
+.home-hero { position: relative; min-height: min(690px, calc(100vh - 90px)); display:flex; align-items:center; justify-content:center; overflow:hidden; isolation:isolate; text-align:center; background: radial-gradient(ellipse at 50% 42%, rgba(70,76,82,.34), transparent 38%), radial-gradient(ellipse at 18% 60%, rgba(100,100,100,.17), transparent 34%), radial-gradient(ellipse at 82% 35%, rgba(75,75,75,.18), transparent 32%), linear-gradient(120deg,#090a0c,#151719 48%,#050607); }
+.home-hero::before,.home-hero::after { content:""; position:absolute; inset:-15%; z-index:-1; pointer-events:none; background: radial-gradient(ellipse at 20% 40%,rgba(150,150,150,.10),transparent 24%),radial-gradient(ellipse at 65% 65%,rgba(110,110,110,.09),transparent 30%),radial-gradient(ellipse at 80% 20%,rgba(130,130,130,.08),transparent 22%); filter:blur(30px); animation:smokeDrift 18s ease-in-out infinite alternate; }
+.home-hero::after { transform:scaleX(-1); animation-duration:24s; opacity:.65; }
+@keyframes smokeDrift { from { transform:translate3d(-2%,1%,0) scale(1); } to { transform:translate3d(3%,-2%,0) scale(1.12); } }
+.hero-shade { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.12) 50%,rgba(0,0,0,.58)),linear-gradient(0deg,rgba(0,0,0,.62),transparent 45%,rgba(0,0,0,.22)); z-index:-1; }
+.hero-content { max-width:850px; padding:70px 24px; }
+.hero-kicker { color:#c5a66a; letter-spacing:.28em; font-size:12px; }
+.hero-content h2 { font-size:clamp(38px,7vw,76px); margin:14px 0; text-shadow:0 4px 24px #000; }
+.hero-content>p:not(.hero-kicker) { color:#d0d0d0; font-size:clamp(16px,2vw,20px); line-height:1.6; }
+.hero-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:14px; margin-top:30px; }
+.hero-actions button { padding:14px 24px; border:1px solid #a43a42; background:rgba(12,13,15,.84); text-transform:uppercase; letter-spacing:.06em; }
+.hero-actions button:hover { background:#7f252d; border-color:#c5a66a; }
+.content-page { max-width:1000px; min-height:55vh; margin:0 auto; padding:60px 24px; }
+.content-page h2 { color:#eee8dc; font-size:clamp(28px,4vw,42px); }
+.tutorial-panel { border:1px solid #333438; background:#111214; padding:24px; border-radius:8px; line-height:1.7; }
+.tutorial-panel h3 { color:#c5a66a; }
+[hidden] { display:none !important; }
+@media(max-width:760px) { .site-logo { width:145px; max-height:80px; } .home-hero { min-height:70vh; } }
+@media(prefers-reduced-motion:reduce) { .home-hero::before,.home-hero::after { animation:none; } }
+
+/* ===== NAVEGAÇÃO PRINCIPAL ===== */
+
+.site-header {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 14px 5%;
+    min-height: 100px;
+    background: rgba(13, 13, 15, 0.96);
+    border-bottom: 1px solid rgba(197, 166, 106, 0.2);
+}
+
+.site-logo {
+    display: block;
+    width: 190px;
+    max-height: 105px;
+    object-fit: contain;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+}
+
+.site-nav button,
+.language-menu button {
+    border: none;
+    background: transparent;
+    color: #eee8dc;
+    cursor: pointer;
+}
+
+.site-nav button {
+    padding: 10px 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.site-nav button:hover,
+.site-nav button.active {
+    color: #c5a66a;
+}
+
+.language-picker {
+    position: relative;
+}
+
+.language-trigger {
+    min-width: 48px;
+    font-size: 23px;
+}
+
+.language-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 160px;
+    padding: 8px;
+    background: #151a20;
+    border: 1px solid #45483d;
+    border-radius: 6px;
+}
+
+.language-menu button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    text-align: left;
+}
+
+.language-menu button:hover {
+    background: #292e26;
+    color: #c5a66a;
+}
+
+.language-menu[hidden] {
+    display: none;
+}
+
+
+/* Leques decorativos com as 12 cartas marcadas mais recentemente */
+.home-hero { isolation:isolate; }
+.recent-fan { position:absolute; bottom:20px; width:min(36%,500px); height:clamp(150px,28vw,310px); z-index:0; pointer-events:none; }
+.recent-fan-left { left:1.5%; }
+.recent-fan-right { right:1.5%; }
+.recent-fan-card { position:absolute; bottom:0; left:50%; width:clamp(66px,8vw,125px); aspect-ratio: 2 / 3; object-fit:cover; border-radius:7px; border:1px solid rgba(197,166,106,.65); box-shadow:0 8px 22px rgba(0,0,0,.75); transform-origin:50% 115%; opacity:.92; }
+.hero-content { position:relative; z-index:2; }
+.hero-shade { z-index:1; }
+@media(max-width:760px) {
+  .recent-fan { width:47%; height:clamp(110px,30vw,180px); bottom:12px; }
+  .recent-fan-left { left:-5%; }
+  .recent-fan-right { right:-5%; }
+  .recent-fan-card { width:clamp(43px,13vw,78px); }
+  .hero-content { padding:42px 18px 170px; }
+  .site-nav { width:min(270px,78vw); padding:14px 18px 24px; }
+  .site-nav .sidebar-close { justify-content:center; align-self:flex-end; width:44px; min-width:44px; height:44px; padding:0; font-size:0; }
+  .site-nav .sidebar-close::before { content:none; }
+}
+
+/* ===== BOTÃO DO MENU LATERAL ===== */
+
+.sidebar-toggle {
+    display: none;
+    font-size: 25px;
+    padding: 8px 12px;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 760px) {
+    .site-header {
+        padding: 12px 16px;
+        min-height: 78px;
+        gap: 12px;
+    }
+
+    .site-logo {
+        width: 105px;
+        max-height: 65px;
+    }
+
+    .sidebar-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .site-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(290px, 85vw);
+        padding: 90px 24px 30px;
+        background: #111113;
+        border-right: 1px solid #49413a;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 8px;
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+        z-index: 30;
+    }
+
+    .site-nav.open {
+        transform: translateX(0);
+    }
+
+    .site-nav button {
+        padding: 16px 10px;
+        text-align: left;
+        border-bottom: 1px solid rgba(197, 166, 106, 0.15);
+    }
+
+    .language-trigger {
+        font-size: 21px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-nav {
+        transition: none;
+    }
+}
+
+/* Ajustes de acabamento: paleta carvão e bronze, sem botões verdes */
+button, select, input {
+    accent-color: #b99a61;
+}
+.controls button, #toggleAllButton, .sidebar-toggle, .language-trigger {
+    background: #242426;
+    color: #eee8dc;
+    border: 1px solid #51483b;
+    border-radius: 6px;
+}
+.controls button:hover, #toggleAllButton:hover, .sidebar-toggle:hover, .language-trigger:hover {
+    background: #34302a;
+    border-color: #9b8050;
+}
+.card {
+    background: #1b1b1d;
+    border-color: #77664e;
+}
+.card.collected {
+    border-color: #77664e;
+}
+.sidebar-close { display:none; }
+.menu-backdrop { display:none; }
+@media (max-width: 760px) {
+    .site-nav .sidebar-close {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 48px;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: #242426;
+        color: #d2b77f;
+        border: 1px solid #51483b;
+        border-radius: 6px;
+        margin-bottom: 10px;
+    }
+    .site-nav .sidebar-close .close-menu-icon { font-size: 24px; line-height: 1; }
+    .menu-backdrop {
+        display:block;
+        position:fixed;
+        inset:0;
+        z-index:29;
+        background:rgba(0,0,0,.62);
+        opacity:0;
+        pointer-events:none;
+        transition:opacity .2s ease;
+    }
+    .menu-backdrop.visible {
+        opacity:1;
+        pointer-events:auto;
+    }
+    .site-nav { z-index:30; }
+}
+
+/* Atributo hidden deve sempre esconder a página inativa, mesmo com regras display específicas. */
+[hidden] { display: none !important; }
+</style>
+</head>
+
+<body>
+<div class="menu-backdrop" id="menuBackdrop" aria-hidden="true"></div>
+<header class="site-header">
+
+    <button
+        class="sidebar-toggle"
+        id="sidebarToggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="siteNav"
+    >
+        ☰
+    </button>
+
+    <a href="#inicio" aria-label="Página inicial">
+        <img
+    src="images/site/logo.png"
+    alt="The Witcher 3 Wild Hunt Remastered"
+    class="site-logo"
+        >
+    </a>
+
+    <nav class="site-nav" id="siteNav" aria-label="Navegação principal">
+        <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Fechar menu"><span id="menuCloseLabel">Opções</span><span class="close-menu-icon" aria-hidden="true">☰</span></button>
+        <button type="button" data-page="home" class="active">
+            Início
+        </button>
+
+        <button type="button" data-page="collection">
+            Minha coleção
+        </button>
+
+        <button type="button" data-page="index">
+            Índice de cartas
+        </button>
+
+        <button type="button" data-page="guides">
+            Guias
+        </button>
+    </nav>
+
+    <div class="language-picker">
+        <button
+            class="language-trigger"
+            id="languageTrigger"
+            type="button"
+            aria-label="Selecionar idioma"
+            aria-expanded="false"
+            aria-controls="languageMenu"
+        >
+            🇧🇷 ▾
+        </button>
+
+        <div class="language-menu" id="languageMenu" hidden>
+            <button type="button" data-language="pt">
+                🇧🇷 Português
+            </button>
+
+            <button type="button" data-language="en">
+                🇺🇸 English
+            </button>
+        </div>
+    </div>
+
+</header>
+
+<section class="home-hero" id="homePage">
+  <div class="hero-shade"></div>
+  <div class="recent-fan recent-fan-left" id="recentFanLeft" aria-label="Cartas selecionadas recentemente à esquerda"></div>
+  <div class="recent-fan recent-fan-right" id="recentFanRight" aria-label="Cartas selecionadas recentemente à direita"></div>
+  <div class="hero-content">
+    <p class="hero-kicker" id="heroKicker">THE WITCHER 3 REMASTERED</p>
+    <h2 id="heroTitle">GUIA DE GWENT</h2>
+    <p id="heroSubtitle">Sua coleção, todas as cartas e o caminho para completar o baralho.</p>
+    <div class="hero-actions">
+      <button type="button" data-open-page="collection" id="heroCollection">Minha coleção</button>
+      <button type="button" data-open-page="guides" id="heroTutorial">Como jogar Gwent</button>
+    </div>
+  </div>
+</section>
+<section class="content-page" id="indexPage" hidden>
+  <h2 id="indexTitle">Como jogar Gwent</h2>
+  <p id="indexIntro">Aprenda o objetivo da partida, os tipos de cartas e como montar sua estratégia. Esta seção será expandida com exemplos ilustrados.</p>
+  <div class="tutorial-panel"><h3 id="indexBasicsTitle">O básico do jogo</h3><p id="indexBasicsText">Em Gwent, você disputa rodadas usando unidades, cartas especiais e habilidades. A força no tabuleiro, o momento de passar e o gerenciamento das cartas na mão fazem parte da estratégia.</p><h3 id="indexTypesTitle">Tipos de cartas</h3><p id="indexTypesText">Unidades, heróis, cartas especiais, clima e cartas de líder têm funções diferentes. Mais adiante, cada categoria terá uma explicação própria e exemplos de cartas.</p></div>
+</section>
+<section class="content-page" id="guidesPage" hidden>
+  <h2 id="guidesTitle">Guias</h2><p id="guidesIntro">Guias adicionais de Gwent e de The Witcher 3 Remastered.</p>
+  <div class="tutorial-panel"><h3 id="writtenGuideTitle">Como conseguir todas as cartas</h3><p id="writtenGuideText">O passo a passo escrito para encontrar e conquistar todas as cartas de Gwent ficará reunido aqui.</p><h3 id="videoGuideTitle">Guia em vídeo</h3><p id="videoGuideText">Os vídeos serão incorporados nesta mesma seção, junto do passo a passo escrito.</p></div>
+</section>
+<main id="collectionPage" hidden>
+    <section class="progress-panel">
+        <div class="progress-heading">
+            <span id="progressLabel">Progresso da coleção</span>
+            <strong id="progressCount">0 / 5</strong>
+            <span id="progressPercent">0%</span>
+        </div>
+        <div
+            class="progress-track"
+            id="progressTrack"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            aria-label="Collection progress"
+        >
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </section>
+
+    <section class="controls">
+        <input id="search" type="search" placeholder="Buscar carta...">
+
+        <select id="filter" aria-label="Filtrar cartas">
+            <option value="all">Todas as cartas</option>
+            <option value="pending">Cartas pendentes</option>
+            <option value="collected">Cartas coletadas</option>
+        </select>
+
+        <select id="groupFilter" aria-label="Filtrar por tipo de carta">
+            <option value="all">Todas as categorias</option>
+            <option value="starting">Cartas iniciais</option>
+            <option value="collection">Coleção completa</option>
+        </select>
+
+        <select id="faction" aria-label="Filtrar por facção">
+            <option value="all">Todas as facções</option>
+            <option value="neutral">Neutras</option>
+            <option value="north">Reinos do Norte</option>
+            <option value="nilfgaard">Nilfgaard</option>
+            <option value="scoiatael">Scoia'tael</option>
+            <option value="monsters">Monstros</option>
+            <option value="skellige">Skellige</option>
+        </select>   
+        
+        <button id="toggleAllButton" type="button">
+            Selecionar todas
+        </button>
+    </section>
+
+    <h2 class="section-title" id="cardsHeading">Coleção de cartas</h2>
+
+    <section class="card-grid" id="cardGrid" aria-live="polite"></section>
+</main>
+
+<footer id="footer">
+    Protótipo do guia interativo de Gwent.
+</footer>
+
+<script>
+const cards = [
+    {
+        "id": "completo-monstros-completos-aracnas-1-png-aracnas-1-png",
+        "pt": "Aracnas",
+        "en": "Aracnas",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/aracnas%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/aracnas (1).png"
+    },
+    {
+        "id": "completo-monstros-completos-aracnas-2-png-aracnas-2-png",
+        "pt": "Aracnas",
+        "en": "Aracnas",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/aracnas%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/aracnas (2).png"
+    },
+    {
+        "id": "completo-monstros-completos-aracnas-3-png-aracnas-3-png",
+        "pt": "Aracnas",
+        "en": "Aracnas",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/aracnas%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/aracnas (3).png"
+    },
+    {
+        "id": "completo-monstros-completos-aracnas-gigante-png-aracnas-gigante-png",
+        "pt": "Aracnas gigante",
+        "en": "Aracnas gigante",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/aracnas-gigante.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/aracnas-gigante.png"
+    },
+    {
+        "id": "completo-monstros-completos-bruxa-sepulcral-png-bruxa-sepulcral-png",
+        "pt": "Bruxa sepulcral",
+        "en": "Bruxa sepulcral",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/bruxa%20sepulcral.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/bruxa sepulcral.png"
+    },
+    {
+        "id": "completo-monstros-completos-carnisal-1-png-carnisal-1-png",
+        "pt": "Carniçal",
+        "en": "Carniçal",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/carnisal%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/carnisal (1).png"
+    },
+    {
+        "id": "completo-monstros-completos-carnisal-2-png-carnisal-2-png",
+        "pt": "Carniçal",
+        "en": "Carniçal",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/carnisal%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/carnisal (2).png"
+    },
+    {
+        "id": "completo-monstros-completos-carnisal-3-png-carnisal-3-png",
+        "pt": "Carniçal",
+        "en": "Carniçal",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/carnisal%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/carnisal (3).png"
+    },
+    {
+        "id": "completo-monstros-completos-cocatriz-png-cocatriz-png",
+        "pt": "Cocatriz",
+        "en": "Cocatriz",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/cocatriz.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/cocatriz.png"
+    },
+    {
+        "id": "completo-monstros-completos-dama-da-peste-png-dama-da-peste-png",
+        "pt": "Dama da peste",
+        "en": "Dama da peste",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/dama%20da%20peste.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/dama da peste.png"
+    },
+    {
+        "id": "completo-monstros-completos-demonio-png-demonio-png",
+        "pt": "Demônio",
+        "en": "Demonio",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/Demonio.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/Demonio.png"
+    },
+    {
+        "id": "completo-monstros-completos-draug-png-draug-png",
+        "pt": "Draug",
+        "en": "Draug",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/Draug.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/Draug.png"
+    },
+    {
+        "id": "completo-monstros-completos-elemental-de-fogo-png-elemental-de-fogo-png",
+        "pt": "Elemental de fogo",
+        "en": "Elemental de fogo",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/Elemental%20de%20fogo.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/Elemental de fogo.png"
+    },
+    {
+        "id": "completo-monstros-completos-elemntal-de-terra-png-elemntal-de-terra-png",
+        "pt": "Elemntal da terra",
+        "en": "Elemntal da terra",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/elemntal%20de%20terra.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/elemntal de terra.png"
+    },
+    {
+        "id": "completo-monstros-completos-endriuga-png-endriuga-png",
+        "pt": "Endriúga",
+        "en": "Endriuga",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/endriuga.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/endriuga.png"
+    },
+    {
+        "id": "completo-monstros-completos-espanto-png-espanto-png",
+        "pt": "Espanto",
+        "en": "Espanto",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/espanto.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/espanto.png"
+    },
+    {
+        "id": "completo-monstros-completos-fetulho-png-fetulho-png",
+        "pt": "Fetulho",
+        "en": "Fetulho",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/fetulho.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/fetulho.png"
+    },
+    {
+        "id": "completo-monstros-completos-gargula-png-gargula-png",
+        "pt": "Gárgula",
+        "en": "Gárgula",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/gargula.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/gargula.png"
+    },
+    {
+        "id": "completo-monstros-completos-gigante-de-gelo-png-gigante-de-gelo-png",
+        "pt": "Gigante de gelo",
+        "en": "Gigante de gelo",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/gigante%20de%20gelo.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/gigante de gelo.png"
+    },
+    {
+        "id": "completo-monstros-completos-grifo-png-grifo-png",
+        "pt": "Grifo",
+        "en": "Grifo",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/grifo.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/grifo.png"
+    },
+    {
+        "id": "completo-monstros-completos-harpia-celaeno-png-harpia-celaeno-png",
+        "pt": "Harpia celaeno",
+        "en": "Harpia celaeno",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/harpia%20celaeno.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/harpia celaeno.png"
+    },
+    {
+        "id": "completo-monstros-completos-harpia-png-harpia-png",
+        "pt": "Harpia",
+        "en": "Harpia",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/harpia.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/harpia.png"
+    },
+    {
+        "id": "completo-monstros-completos-imlerith-png-imlerith-png",
+        "pt": "Imlerith",
+        "en": "Imlerith",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/imlerith.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/imlerith.png"
+    },
+    {
+        "id": "completo-monstros-completos-kayran-png-kayran-png",
+        "pt": "Kayran",
+        "en": "Kayran",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/kayran.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/kayran.png"
+    },
+    {
+        "id": "completo-monstros-completos-liche-png-liche-png",
+        "pt": "Liche",
+        "en": "Liche",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/Liche.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/Liche.png"
+    },
+    {
+        "id": "completo-monstros-completos-lobisomen-png-lobisomen-png",
+        "pt": "Lobisomen",
+        "en": "Lobisomen",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/lobisomen.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/lobisomen.png"
+    },
+    {
+        "id": "completo-monstros-completos-moira-alquimista-png-moira-alquimista-png",
+        "pt": "Moira: Alquimista",
+        "en": "Moira: Alquimista",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/moira%20alquimista.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/moira alquimista.png"
+    },
+    {
+        "id": "completo-monstros-completos-moira-sibilante-png-moira-sibilante-png",
+        "pt": "Moira: Sibilante",
+        "en": "Moira: Sibilante",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/moira%20sibilante.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/moira sibilante.png"
+    },
+    {
+        "id": "completo-monstros-completos-moira-tecela-png-moira-tecela-png",
+        "pt": "Moira: Tecelã",
+        "en": "Moira: Tecelã",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/moira%20tecela.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/moira tecela.png"
+    },
+    {
+        "id": "completo-monstros-completos-nekker-1-png-nekker-1-png",
+        "pt": "Nekker",
+        "en": "Nekker",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/nekker%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/nekker (1).png"
+    },
+    {
+        "id": "completo-monstros-completos-nekker-2-png-nekker-2-png",
+        "pt": "Nekker",
+        "en": "Nekker",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/nekker%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/nekker (2).png"
+    },
+    {
+        "id": "completo-monstros-completos-nekker-3-png-nekker-3-png",
+        "pt": "Nekker",
+        "en": "Nekker",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/nekker%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/nekker (3).png"
+    },
+    {
+        "id": "completo-monstros-completos-nevoloso-png-nevoloso-png",
+        "pt": "Nevoloso",
+        "en": "Nevoloso",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/nevoloso.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/nevoloso.png"
+    },
+    {
+        "id": "completo-monstros-completos-tordo-png-tordo-png",
+        "pt": "Tordo",
+        "en": "Tordo",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/tordo.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/tordo.png"
+    },
+    {
+        "id": "completo-monstros-completos-vamp-ekimmu-png-vamp-ekimmu-png",
+        "pt": "Vampiro: Ekimmu",
+        "en": "Vampiro: Ekimmu",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/vamp%20ekimmu.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/vamp ekimmu.png"
+    },
+    {
+        "id": "completo-monstros-completos-vamp-fleder-png-vamp-fleder-png",
+        "pt": "Vampiro: Fleder",
+        "en": "Vampiro: Fleder",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/vamp%20fleder.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/vamp fleder.png"
+    },
+    {
+        "id": "completo-monstros-completos-vamp-garkain-png-vamp-garkain-png",
+        "pt": "Vampiro: Garkain",
+        "en": "Vampiro: Garkain",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/vamp%20garkain.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/vamp garkain.png"
+    },
+    {
+        "id": "completo-monstros-completos-vamp-katakan-png-vamp-katakan-png",
+        "pt": "Vampiro: Katakan",
+        "en": "Vampiro: Katakan",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/vamp%20katakan.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/vamp katakan.png"
+    },
+    {
+        "id": "completo-monstros-completos-vamp-lamia-png-vamp-lamia-png",
+        "pt": "VVampiro: Lâmia",
+        "en": "Vampiro: Lâmia",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/vamp%20lamia.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/vamp lamia.png"
+    },
+    {
+        "id": "completo-monstros-completos-wyvern-png-wyvern-png",
+        "pt": "Wyvern",
+        "en": "Wyvern",
+        "faction": "monsters",
+        "image": "images/gwent/completo/monstros%20completos/wyvern.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/monstros completos/wyvern.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-carpeado-png-carpeado-png",
+        "pt": "Carpeado",
+        "en": "Carpeado",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/carpeado.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/carpeado.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-cirila-png-cirila-png",
+        "pt": "Cirila",
+        "en": "Cirila",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/cirila.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/cirila.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-corneta-do-comandante-png-corneta-do-comandante-png",
+        "pt": "Corneta do Comandante",
+        "en": "Corneta do Comandante",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/corneta-do-comandante.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/corneta-do-comandante.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-dandelion-png-dandelion-png",
+        "pt": "Dandelion",
+        "en": "Dandelion",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/dandelion.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/dandelion.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-emiel-regis-rohellec-terzieff-png-emiel-regis-rohellec-terzieff-png",
+        "pt": "Emiel Regis Rohellec Terzieff",
+        "en": "Emiel Regis Rohellec Terzieff",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/emiel-regis-rohellec-terzieff.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/emiel-regis-rohellec-terzieff.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-geralt-de-rivia-png-geralt-de-rivia-png",
+        "pt": "Geralt de Rivia",
+        "en": "Geralt de Rivia",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/geralt-de-rivia.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/geralt-de-rivia.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-isca-png-isca-png",
+        "pt": "Isca",
+        "en": "Isca",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/isca.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/isca.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-mysterioso-png-mysterioso-png",
+        "pt": "Elfo Misterioso",
+        "en": "Elfo Misterioso",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/mysterioso.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/mysterioso.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-queimar-png-queimar-png",
+        "pt": "Queimar",
+        "en": "Queimar",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/queimar.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/queimar.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-triss-merigold-png-triss-merigold-png",
+        "pt": "Triss Merigold",
+        "en": "Triss Merigold",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/triss-merigold.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/triss-merigold.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-vesemir-png-vesemir-png",
+        "pt": "Vesemir",
+        "en": "Vesemir",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/vesemir.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/vesemir.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-villentretenmerth-png-villentretenmerth-png",
+        "pt": "Villentretenmerth",
+        "en": "Villentretenmerth",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/villentretenmerth.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/villentretenmerth.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-yennefer-de-vengerberg-png-yennefer-de-vengerberg-png",
+        "pt": "Yennefer de Vengerberg",
+        "en": "Yennefer de Vengerberg",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/yennefer-de-vengerberg.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/yennefer-de-vengerberg.png"
+    },
+    {
+        "id": "completo-neutros-elfos-neutros-zoltan-chivay-png-zoltan-chivay-png",
+        "pt": "Zoltan Chivay",
+        "en": "Zoltan Chivay",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/elfos%20neutros/zoltan-chivay.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/elfos neutros/zoltan-chivay.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-carpeado-png-carpeado-png",
+        "pt": "Carpeado",
+        "en": "Carpeado",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/carpeado.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/carpeado.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-cirila-png-cirila-png",
+        "pt": "Cirila",
+        "en": "Cirila",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/Cirila.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/Cirila.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-corneta-do-comandante-png-corneta-do-comandante-png",
+        "pt": "Corneta do Comandante",
+        "en": "Corneta do Comandante",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/corneta-do-comandante.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/corneta-do-comandante.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-dandelion-png-dandelion-png",
+        "pt": "Dandelion",
+        "en": "Dandelion",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/dandelion.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/dandelion.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-elfo-mysterioso-png-elfo-mysterioso-png",
+        "pt": "Elfo Misterioso",
+        "en": "Elfo Misterioso",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/elfo%20mysterioso.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/elfo mysterioso.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-emiel-regis-rohellec-terzieff-png-emiel-regis-rohellec-terzieff-png",
+        "pt": "Emiel Regis Rohellec Terzieff",
+        "en": "Emiel Regis Rohellec Terzieff",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/emiel-regis-rohellec-terzieff.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/emiel-regis-rohellec-terzieff.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-geralt-de-rivia-png-geralt-de-rivia-png",
+        "pt": "Geralt de Rivia",
+        "en": "Geralt de Rivia",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/geralt-de-rivia.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/geralt-de-rivia.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-isca-png-isca-png",
+        "pt": "Isca",
+        "en": "Isca",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/isca.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/isca.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-queimar-png-queimar-png",
+        "pt": "Queimar",
+        "en": "Queimar",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/queimar.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/queimar.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-triss-merigold-png-triss-merigold-png",
+        "pt": "Triss Merigold",
+        "en": "Triss Merigold",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/triss-merigold.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/triss-merigold.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-vesemir-png-vesemir-png",
+        "pt": "Vesemir",
+        "en": "Vesemir",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/vesemir.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/vesemir.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-villentretenmerth-png-villentretenmerth-png",
+        "pt": "Villentretenmerth",
+        "en": "Villentretenmerth",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/villentretenmerth.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/villentretenmerth.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-yennefer-de-vengerberg-png-yennefer-de-vengerberg-png",
+        "pt": "Yennefer de vengerberg",
+        "en": "Yennefer de vengerberg",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/yennefer-de-vengerberg.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/yennefer-de-vengerberg.png"
+    },
+    {
+        "id": "completo-neutros-monstros-neutros-zoltan-chivay-png-zoltan-chivay-png",
+        "pt": "Zoltan Chivay",
+        "en": "Zoltan Chivay",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/monstros%20neutros/zoltan-chivay.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/monstros neutros/zoltan-chivay.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-carpeado-png-carpeado-png",
+        "pt": "Carpeado",
+        "en": "Carpeado",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/carpeado.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/carpeado.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-cirila-png-cirila-png",
+        "pt": "Cirila",
+        "en": "Cirila",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/cirila.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/cirila.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-corneta-do-comandante-png-corneta-do-comandante-png",
+        "pt": "Corneta do Comandante",
+        "en": "Corneta do Comandante",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/corneta-do-comandante.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/corneta-do-comandante.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-dandelion-png-dandelion-png",
+        "pt": "Dandelion",
+        "en": "Dandelion",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/dandelion.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/dandelion.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-elfo-misterioso-png-elfo-misterioso-png",
+        "pt": "Elfo Misterioso",
+        "en": "Elfo Misterioso",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/elfo%20misterioso.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/elfo misterioso.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-emiel-regis-rohellec-terzieff-png-emiel-regis-rohellec-terzieff-png",
+        "pt": "Emiel Regis Rohellec Terzieff",
+        "en": "Emiel Regis Rohellec Terzieff",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/emiel-regis-rohellec-terzieff.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/emiel-regis-rohellec-terzieff.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-geralt-de-rivia-png-geralt-de-rivia-png",
+        "pt": "Geralt de Rivia",
+        "en": "Geralt de Rivia",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/geralt-de-rivia.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/geralt-de-rivia.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-isca-png-isca-png",
+        "pt": "Isca",
+        "en": "Isca",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/isca.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/isca.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-queimar-png-queimar-png",
+        "pt": "Queimar",
+        "en": "Queimar",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/queimar.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/queimar.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-triss-merigold-png-triss-merigold-png",
+        "pt": "Triss Merigold",
+        "en": "Triss Merigold",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/triss-merigold.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/triss-merigold.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-vesemir-png-vesemir-png",
+        "pt": "Vesemir",
+        "en": "Vesemir",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/vesemir.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/vesemir.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-villentretenmerth-png-villentretenmerth-png",
+        "pt": "Villentretenmerth",
+        "en": "Villentretenmerth",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/villentretenmerth.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/villentretenmerth.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-yennefer-de-vengerberg-png-yennefer-de-vengerberg-png",
+        "pt": "Yennefer de Vengerberg",
+        "en": "Yennefer de Vengerberg",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/yennefer-de-vengerberg.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/yennefer-de-vengerberg.png"
+    },
+    {
+        "id": "completo-neutros-nilfi-neutros-zoltan-png-zoltan-png",
+        "pt": "Zoltan Chivay",
+        "en": "Zoltan Chivay",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/nilfi%20neutros/zoltan.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/nilfi neutros/zoltan.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-carpiado-png-carpiado-png",
+        "pt": "Carpeado",
+        "en": "Carpeado",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/carpiado.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/carpiado.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-cirila-png-cirila-png",
+        "pt": "Cirilla",
+        "en": "Cirilla",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/cirila.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/cirila.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-corneta-do-comandante-png-corneta-do-comandante-png",
+        "pt": "Corneta do Comandante",
+        "en": "Corneta do Comandante",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/corneta-do-comandante.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/corneta-do-comandante.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-dandelion-png-dandelion-png",
+        "pt": "Dandelion",
+        "en": "Dandelion",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/dandelion.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/dandelion.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-emiel-regis-rohellec-terzieff-png-emiel-regis-rohellec-terzieff-png",
+        "pt": "Emiel Regis Rohellec Terzieff",
+        "en": "Emiel Regis Rohellec Terzieff",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/emiel-regis-rohellec-terzieff.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/emiel-regis-rohellec-terzieff.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-geralt-de-rivia-png-geralt-de-rivia-png",
+        "pt": "Geralt de Rivia",
+        "en": "Geralt de Rivia",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/geralt-de-rivia.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/geralt-de-rivia.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-isca-png-isca-png",
+        "pt": "Isca",
+        "en": "Isca",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/isca.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/isca.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-mysterioso-png-mysterioso-png",
+        "pt": "Elfo Misterioso",
+        "en": "Elfo Misterioso",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/mysterioso.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/mysterioso.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-queimar-png-queimar-png",
+        "pt": "Queimar",
+        "en": "Queimar",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/queimar.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/queimar.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-triss-merigold-png-triss-merigold-png",
+        "pt": "Triss Merigold",
+        "en": "Triss Merigold",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/triss-merigold.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/triss-merigold.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-vesemir-png-vesemir-png",
+        "pt": "Vesemir",
+        "en": "Vesemir",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/vesemir.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/vesemir.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-villentretenmerth-png-villentretenmerth-png",
+        "pt": "Villentretenmerth",
+        "en": "Villentretenmerth",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/villentretenmerth.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/villentretenmerth.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-yennefer-de-vengerberg-png-yennefer-de-vengerberg-png",
+        "pt": "Yennefer de Vengerberg",
+        "en": "Yennefer de Vengerberg",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/yennefer-de-vengerberg.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/yennefer-de-vengerberg.png"
+    },
+    {
+        "id": "completo-neutros-norte-neutros-zoltan-chivay-png-zoltan-chivay-png",
+        "pt": "Zoltan Chivay",
+        "en": "Zoltan Chivay",
+        "faction": "neutral",
+        "image": "images/gwent/completo/neutros/norte%20neutros/zoltan-chivay.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/neutros/norte neutros/zoltan-chivay.png"
+    },
+    {
+        "id": "completo-nilfi-completo-albrich-png-albrich-png",
+        "pt": "Albrich",
+        "en": "Albrich",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/albrich.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/albrich.png"
+    },
+    {
+        "id": "completo-nilfi-completo-arqueiro-de-infanta-1-png-arqueiro-de-infanta-1-png",
+        "pt": "Arqueiro de infantaria Negra",
+        "en": "Arqueiro de infantaria Negra",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/arqueiro%20de%20infanta%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/arqueiro de infanta (1).png"
+    },
+    {
+        "id": "completo-nilfi-completo-arqueiro-de-infanta-2-png-arqueiro-de-infanta-2-png",
+        "pt": "Arqueiro de infantaria Negra",
+        "en": "Arqueiro de infantaria Negra",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/arqueiro%20de%20infanta%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/arqueiro de infanta (2).png"
+    },
+    {
+        "id": "completo-nilfi-completo-arqueiro-de-reforco-2-png-arqueiro-de-reforco-2-png",
+        "pt": "Arqueiro de Reforço",
+        "en": "Arqueiro de Reforço",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/arqueiro-de-reforco-2.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/arqueiro-de-reforco-2.png"
+    },
+    {
+        "id": "completo-nilfi-completo-arqueiro-de-reforco-png-arqueiro-de-reforco-png",
+        "pt": "Arqueiro de Reforco",
+        "en": "Arqueiro de Reforço",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/arqueiro-de-reforco.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/arqueiro-de-reforco.png"
+    },
+    {
+        "id": "completo-nilfi-completo-assire-var-anahid-png-assire-var-anahid-png",
+        "pt": "Assire var Anahid",
+        "en": "Assire var Anahid",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/assire-var-anahid.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/assire-var-anahid.png"
+    },
+    {
+        "id": "completo-nilfi-completo-brigada-de-cavalaria-1-png-brigada-de-cavalaria-1-png",
+        "pt": "Brigada de cavalaria Nausicaa",
+        "en": "Brigada de cavalaria Nausicaa",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/brigada%20de%20cavalaria%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/brigada de cavalaria (1).png"
+    },
+    {
+        "id": "completo-nilfi-completo-brigada-de-cavalaria-2-png-brigada-de-cavalaria-2-png",
+        "pt": "Brigada de cavalaria Nausicaa",
+        "en": "Brigada de cavalaria Nausicaa",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/brigada%20de%20cavalaria%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/brigada de cavalaria (2).png"
+    },
+    {
+        "id": "completo-nilfi-completo-brigada-de-cavalaria-3-png-brigada-de-cavalaria-3-png",
+        "pt": "Brigada de cavalaria Nausicaa",
+        "en": "Brigada de cavalaria Nausicaa",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/brigada%20de%20cavalaria%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/brigada de cavalaria (3).png"
+    },
+    {
+        "id": "completo-nilfi-completo-brigada-imperial-1-png-brigada-imperial-1-png",
+        "pt": "Brigada Imperial",
+        "en": "Brigada Imperial",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/Brigada%20imperial%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/Brigada imperial (1).png"
+    },
+    {
+        "id": "completo-nilfi-completo-brigada-imperial-2-png-brigada-imperial-2-png",
+        "pt": "Brigada Imperial",
+        "en": "Brigada Imperial",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/Brigada%20imperial%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/Brigada imperial (2).png"
+    },
+    {
+        "id": "completo-nilfi-completo-brigada-imperial-3-png-brigada-imperial-3-png",
+        "pt": "Brigada Imperial",
+        "en": "Brigada Imperial",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/Brigada%20imperial%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/Brigada imperial (3).png"
+    },
+    {
+        "id": "completo-nilfi-completo-brigada-imperial-4-png-brigada-imperial-4-png",
+        "pt": "Brigada Imperial",
+        "en": "Brigada Imperial",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/Brigada%20imperial%20(4).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/Brigada imperial (4).png"
+    },
+    {
+        "id": "completo-nilfi-completo-cahir-mawr-dyffryn-aep-ceallach-png-cahir-mawr-dyffryn-aep-ceallach-png",
+        "pt": "Cahir Mawr Dyffryn aep Ceallach",
+        "en": "Cahir Mawr Dyffryn aep Ceallach",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/cahir-mawr-dyffryn-aep-ceallach.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/cahir-mawr-dyffryn-aep-ceallach.png"
+    },
+    {
+        "id": "completo-nilfi-completo-cynthia-png-cynthia-png",
+        "pt": "Cynthia",
+        "en": "Cynthia",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/cynthia.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/cynthia.png"
+    },
+    {
+        "id": "completo-nilfi-completo-engenheiro-de-cerco-png-engenheiro-de-cerco-png",
+        "pt": "Engenheiro de Cerco",
+        "en": "Engenheiro de Cerco",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/engenheiro%20de%20cerco.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/engenheiro de cerco.png"
+    },
+    {
+        "id": "completo-nilfi-completo-escorpiao-de-fogo-png-escorpiao-de-fogo-png",
+        "pt": "Escorpião de Fogo da Zerrikânia",
+        "en": "Escorpião de Fogo da Zerrikânia",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/escorpiao%20de%20fogo.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/escorpiao de fogo.png"
+    },
+    {
+        "id": "completo-nilfi-completo-escorpiao-pesado-png-escorpiao-pesado-png",
+        "pt": "Escorpião de Fogo Pesado da Zerrikânia",
+        "en": "Escorpião de Fogo Pesado da Zerrikânia",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/escorpiao%20pesado.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/escorpiao pesado.png"
+    },
+    {
+        "id": "completo-nilfi-completo-fringilla-vigo-png-fringilla-vigo-png",
+        "pt": "Fringilla Vigo",
+        "en": "Fringilla Vigo",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/fringilla%20vigo.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/fringilla vigo.png"
+    },
+    {
+        "id": "completo-nilfi-completo-jovem-emissario-1-png-jovem-emissario-1-png",
+        "pt": "Jovem Emissário",
+        "en": "Jovem Emissário",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/jovem%20emissario%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/jovem emissario (1).png"
+    },
+    {
+        "id": "completo-nilfi-completo-jovem-emissario-png-jovem-emissario-png",
+        "pt": "Jovem Emissário",
+        "en": "Jovem Emissário",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/jovem%20emissario.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/jovem emissario.png"
+    },
+    {
+        "id": "completo-nilfi-completo-letho-de-gulet-png-letho-de-gulet-png",
+        "pt": "Letho de Gulet",
+        "en": "Letho de Gulet",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/letho-de-gulet.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/letho-de-gulet.png"
+    },
+    {
+        "id": "completo-nilfi-completo-manganela-podre-png-manganela-podre-png",
+        "pt": "Manganela Podre",
+        "en": "Manganela Podre",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/manganela%20podre.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/manganela podre.png"
+    },
+    {
+        "id": "completo-nilfi-completo-menno-coehoorn-png-menno-coehoorn-png",
+        "pt": "Menno Coehoorn",
+        "en": "Menno Coehoorn",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/menno%20coehoorn.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/menno coehoorn.png"
+    },
+    {
+        "id": "completo-nilfi-completo-morteisen-png-morteisen-png",
+        "pt": "Morteisen",
+        "en": "Morteisen",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/morteisen.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/morteisen.png"
+    },
+    {
+        "id": "completo-nilfi-completo-puttkammer-png-puttkammer-png",
+        "pt": "Puttkammer",
+        "en": "Puttkammer",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/puttkammer.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/puttkammer.png"
+    },
+    {
+        "id": "completo-nilfi-completo-reforco-de-cerco-png-reforco-de-cerco-png",
+        "pt": "Reforço de Cerco",
+        "en": "Reforço de Cerco",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/reforco-de-cerco.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/reforco-de-cerco.png"
+    },
+    {
+        "id": "completo-nilfi-completo-renuald-aep-matsen-png-renuald-aep-matsen-png",
+        "pt": "Renuald aep Matsen",
+        "en": "Renuald aep Matsen",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/renuald%20aep%20matsen.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/renuald aep matsen.png"
+    },
+    {
+        "id": "completo-nilfi-completo-shilard-fitz-png-shilard-fitz-png",
+        "pt": "Shilard Fitz-Oesterlen",
+        "en": "Shilard Fitz-Oesterlen",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/Shilard%20fitz.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/Shilard fitz.png"
+    },
+    {
+        "id": "completo-nilfi-completo-stefan-skellen-png-stefan-skellen-png",
+        "pt": "Stefan Skellen",
+        "en": "Stefan Skellen",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/Stefan%20Skellen.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/Stefan Skellen.png"
+    },
+    {
+        "id": "completo-nilfi-completo-sweers-png-sweers-png",
+        "pt": "Sweers",
+        "en": "Sweers",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/sweers.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/sweers.png"
+    },
+    {
+        "id": "completo-nilfi-completo-tanaceto-png-tanaceto-png",
+        "pt": "Tanaceto",
+        "en": "Tanaceto",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/tanaceto.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/tanaceto.png"
+    },
+    {
+        "id": "completo-nilfi-completo-tibor-eggebracht-png-tibor-eggebracht-png",
+        "pt": "Tibor Eggebracht",
+        "en": "Tibor Eggebracht",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/tibor%20eggebracht.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/tibor eggebracht.png"
+    },
+    {
+        "id": "completo-nilfi-completo-vanhemar-png-vanhemar-png",
+        "pt": "Vanhemar",
+        "en": "Vanhemar",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/vanhemar.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/vanhemar.png"
+    },
+    {
+        "id": "completo-nilfi-completo-vattier-de-rideaux-png-vattier-de-rideaux-png",
+        "pt": "Vattier de Rideaux",
+        "en": "Vattier de Rideaux",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/vattier%20de%20rideaux.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/vattier de rideaux.png"
+    },
+    {
+        "id": "completo-nilfi-completo-voorhis-png-voorhis-png",
+        "pt": "Morvran Voorhis",
+        "en": "Morvran Voorhis",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/voorhis.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/voorhis.png"
+    },
+    {
+        "id": "completo-nilfi-completo-vreemde-png-vreemde-png",
+        "pt": "Vreemde",
+        "en": "Vreemde",
+        "faction": "nilfgaard",
+        "image": "images/gwent/completo/nilfi%20completo/vreemde.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/nilfi completo/vreemde.png"
+    },
+    {
+        "id": "completo-norte-completo-cacador-de-dragoes-1-png-cacador-de-dragoes-1-png",
+        "pt": "Caçador de Dragões de Crinfrid",
+        "en": "Caçador de Dragões de Crinfrid",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/cacador%20de%20dragoes%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/cacador de dragoes (1).png"
+    },
+    {
+        "id": "completo-norte-completo-cacador-de-dragoes-2-png-cacador-de-dragoes-2-png",
+        "pt": "Caçador de Dragões de Crinfrid",
+        "en": "Caçador de Dragões de Crinfrid",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/cacador%20de%20dragoes%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/cacador de dragoes (2).png"
+    },
+    {
+        "id": "completo-norte-completo-cacador-de-dragoes-3-png-cacador-de-dragoes-3-png",
+        "pt": "Caçador de Dragões de Crinfrid",
+        "en": "Caçador de Dragões de Crinfrid",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/cacador%20de%20dragoes%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/cacador de dragoes (3).png"
+    },
+    {
+        "id": "completo-norte-completo-catapulta-2-png-catapulta-2-png",
+        "pt": "Catapulta",
+        "en": "Catapulta",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/catapulta-2.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/catapulta-2.png"
+    },
+    {
+        "id": "completo-norte-completo-catapulta-png-catapulta-png",
+        "pt": "Catapulta",
+        "en": "Catapulta",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/catapulta.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/catapulta.png"
+    },
+    {
+        "id": "completo-norte-completo-dijkstra-png-dijkstra-png",
+        "pt": "Sigismund Dijkstra",
+        "en": "Sigismund Dijkstra",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/Dijkstra.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/Dijkstra.png"
+    },
+    {
+        "id": "completo-norte-completo-esterad-thyssen-png-esterad-thyssen-png",
+        "pt": "Esterad Thyssen",
+        "en": "Esterad Thyssen",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/esterad-thyssen.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/esterad-thyssen.png"
+    },
+    {
+        "id": "completo-norte-completo-john-natalis-png-john-natalis-png",
+        "pt": "John Natalis",
+        "en": "John Natalis",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/john-natalis.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/john-natalis.png"
+    },
+    {
+        "id": "completo-norte-completo-philippa-eilhart-png-philippa-eilhart-png",
+        "pt": "Philippa Eilhart",
+        "en": "Philippa Eilhart",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/philippa-eilhart.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/philippa-eilhart.png"
+    },
+    {
+        "id": "completo-norte-completo-thaler-png-thaler-png",
+        "pt": "Thaler",
+        "en": "Thaler",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/thaler.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/thaler.png"
+    },
+    {
+        "id": "completo-norte-completo-torre-de-cerco-png-torre-de-cerco-png",
+        "pt": "Torre de Cerco",
+        "en": "Torre de Cerco",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/torre%20de%20cerco.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/torre de cerco.png"
+    },
+    {
+        "id": "completo-norte-completo-vernon-roche-png-vernon-roche-png",
+        "pt": "Vernon Roche",
+        "en": "Vernon Roche",
+        "faction": "north",
+        "image": "images/gwent/completo/norte%20completo/vernon-roche.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/norte completo/vernon-roche.png"
+    },
+    {
+        "id": "completo-scoiatel-anao-escaramucador-1-png-anao-escaramucador-1-png",
+        "pt": "Anão Escaramuçador",
+        "en": "Anão Escaramuçador",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/anao%20escaramucador%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/anao escaramucador (1).png"
+    },
+    {
+        "id": "completo-scoiatel-anao-escaramucador-2-png-anao-escaramucador-2-png",
+        "pt": "Anão Escaramuçador",
+        "en": "Anão Escaramuçador",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/anao%20escaramucador%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/anao escaramucador (2).png"
+    },
+    {
+        "id": "completo-scoiatel-anao-escaramucador-3-png-anao-escaramucador-3-png",
+        "pt": "Anão Escaramuçador",
+        "en": "Anão Escaramuçador",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/anao%20escaramucador%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/anao escaramucador (3).png"
+    },
+    {
+        "id": "completo-scoiatel-anao-escaramucador-4-png-anao-escaramucador-4-png",
+        "pt": "Anão Escaramuçador",
+        "en": "Anão Escaramuçador",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/anao%20escaramucador%20(4).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/anao escaramucador (4).png"
+    },
+    {
+        "id": "completo-scoiatel-anao-escaramucador-5-png-anao-escaramucador-5-png",
+        "pt": "Anão Escaramuçador",
+        "en": "Anão Escaramuçador",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/anao%20escaramucador%20(5).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/anao escaramucador (5).png"
+    },
+    {
+        "id": "completo-scoiatel-anao-escaramucador-6-png-anao-escaramucador-6-png",
+        "pt": "Anão Escaramuçador",
+        "en": "Anão Escaramuçador",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/anao%20escaramucador%20(6).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/anao escaramucador (6).png"
+    },
+    {
+        "id": "completo-scoiatel-arqueiro-de-dol-blathanna-png-arqueiro-de-dol-blathanna-png",
+        "pt": "Arqueiro de Dol Blathanna",
+        "en": "Arqueiro de Dol Blathanna",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/arqueiro%20de%20dol%20blathanna.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/arqueiro de dol blathanna.png"
+    },
+    {
+        "id": "completo-scoiatel-barclay-els-png-barclay-els-png",
+        "pt": "Barclay Els",
+        "en": "Barclay Els",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/barclay-els.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/barclay-els.png"
+    },
+    {
+        "id": "completo-scoiatel-batedor-de-dol-blathanna-1-png-batedor-de-dol-blathanna-1-png",
+        "pt": "Batedor de Dol Blathanna",
+        "en": "Batedor de Dol Blathanna",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/batedor%20de%20dol%20blathanna%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/batedor de dol blathanna (1).png"
+    },
+    {
+        "id": "completo-scoiatel-batedor-de-dol-blathanna-2-png-batedor-de-dol-blathanna-2-png",
+        "pt": "Batedor de Dol Blathanna",
+        "en": "Batedor de Dol Blathanna",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/batedor%20de%20dol%20blathanna%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/batedor de dol blathanna (2).png"
+    },
+    {
+        "id": "completo-scoiatel-batedor-de-dol-blathanna-3-png-batedor-de-dol-blathanna-3-png",
+        "pt": "Batedor de Dol Blathanna",
+        "en": "Batedor de Dol Blathanna",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/batedor%20de%20dol%20blathanna%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/batedor de dol blathanna (3).png"
+    },
+    {
+        "id": "completo-scoiatel-brigada-vriheddd-1-png-brigada-vriheddd-1-png",
+        "pt": "Brigada Vrihedd",
+        "en": "Brigada Vrihedd",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/brigada%20vriheddd%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/brigada vriheddd (1).png"
+    },
+    {
+        "id": "completo-scoiatel-brigada-vriheddd-2-png-brigada-vriheddd-2-png",
+        "pt": "Brigada Vrihedd",
+        "en": "Brigada Vrihedd",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/brigada%20vriheddd%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/brigada vriheddd (2).png"
+    },
+    {
+        "id": "completo-scoiatel-cadete-vrihedd-png-cadete-vrihedd-png",
+        "pt": "Cadete Vrihedd",
+        "en": "Cadete Vrihedd",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/cadete%20vrihedd.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/cadete vrihedd.png"
+    },
+    {
+        "id": "completo-scoiatel-ciaran-aep-easnillien-png-ciaran-aep-easnillien-png",
+        "pt": "Ciaran aep Easnillien",
+        "en": "Ciaran aep Easnillien",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/ciaran%20aep%20easnillien.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/ciaran aep easnillien.png"
+    },
+    {
+        "id": "completo-scoiatel-defensores-de-mahakam-1-png-defensores-de-mahakam-1-png",
+        "pt": "Defensores de Mahakam",
+        "en": "Defensores de Mahakam",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/defensores%20de%20mahakam%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/defensores de mahakam (1).png"
+    },
+    {
+        "id": "completo-scoiatel-defensores-de-mahakam-2-png-defensores-de-mahakam-2-png",
+        "pt": "Defensores de Mahakam",
+        "en": "Defensores de Mahakam",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/defensores%20de%20mahakam%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/defensores de mahakam (2).png"
+    },
+    {
+        "id": "completo-scoiatel-defensores-de-mahakam-3-png-defensores-de-mahakam-3-png",
+        "pt": "Defensores de Mahakam",
+        "en": "Defensores de Mahakam",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/defensores%20de%20mahakam%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/defensores de mahakam (3).png"
+    },
+    {
+        "id": "completo-scoiatel-defensores-de-mahakam-4-png-defensores-de-mahakam-4-png",
+        "pt": "Defensores de Mahakam",
+        "en": "Defensores de Mahakam",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/defensores%20de%20mahakam%20(4).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/defensores de mahakam (4).png"
+    },
+    {
+        "id": "completo-scoiatel-defensores-de-mahakam-5-png-defensores-de-mahakam-5-png",
+        "pt": "Defensores de Mahakam",
+        "en": "Defensores de Mahakam",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/defensores%20de%20mahakam%20(5).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/defensores de mahakam (5).png"
+    },
+    {
+        "id": "completo-scoiatel-dennis-cranmer-png-dennis-cranmer-png",
+        "pt": "Dennis Cranmer",
+        "en": "Dennis Cranmer",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/dennis%20cranmer.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/dennis cranmer.png"
+    },
+    {
+        "id": "completo-scoiatel-eithne-png-eithne-png",
+        "pt": "Eithné",
+        "en": "Eithné",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/Eithne.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/Eithne.png"
+    },
+    {
+        "id": "completo-scoiatel-filavandrel-aen-fidhail-png-filavandrel-aen-fidhail-png",
+        "pt": "Filavandrel aén Fidháil",
+        "en": "Filavandrel aén Fidháil",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/filavandrel-aen-fidhail.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/filavandrel-aen-fidhail.png"
+    },
+    {
+        "id": "completo-scoiatel-ida-emean-png-ida-emean-png",
+        "pt": "Ida Emean aep Sivney",
+        "en": "Ida Emean aep Sivney",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/ida%20emean.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/ida emean.png"
+    },
+    {
+        "id": "completo-scoiatel-iorverth-png-iorverth-png",
+        "pt": "Iorverth",
+        "en": "Iorverth",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/iorverth.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/iorverth.png"
+    },
+    {
+        "id": "completo-scoiatel-isengrim-faoiltiarna-png-isengrim-faoiltiarna-png",
+        "pt": "Isengrim Faoiltiarna",
+        "en": "Isengrim Faoiltiarna",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/isengrim-faoiltiarna.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/isengrim-faoiltiarna.png"
+    },
+    {
+        "id": "completo-scoiatel-medico-havekar-1-png-medico-havekar-1-png",
+        "pt": "Médico Havekar",
+        "en": "Médico Havekar",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/medico%20havekar%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/medico havekar (1).png"
+    },
+    {
+        "id": "completo-scoiatel-medico-havekar-2-png-medico-havekar-2-png",
+        "pt": "Médico Havekar",
+        "en": "Médico Havekar",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/medico%20havekar%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/medico havekar (2).png"
+    },
+    {
+        "id": "completo-scoiatel-medico-havekar-3-png-medico-havekar-3-png",
+        "pt": "Médico Havekar",
+        "en": "Médico Havekar",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/medico%20havekar%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/medico havekar (3).png"
+    },
+    {
+        "id": "completo-scoiatel-milva-png-milva-png",
+        "pt": "Milva",
+        "en": "Milva",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/milva.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/milva.png"
+    },
+    {
+        "id": "completo-scoiatel-reforco-havekar-1-png-reforco-havekar-1-png",
+        "pt": "Reforço Havekar",
+        "en": "Reforço Havekar",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/reforco%20havekar%20(1).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/reforco havekar (1).png"
+    },
+    {
+        "id": "completo-scoiatel-reforco-havekar-2-png-reforco-havekar-2-png",
+        "pt": "Reforço Havekar",
+        "en": "Reforço Havekar",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/reforco%20havekar%20(2).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/reforco havekar (2).png"
+    },
+    {
+        "id": "completo-scoiatel-reforco-havekar-3-png-reforco-havekar-3-png",
+        "pt": "Reforço Havekar",
+        "en": "Reforço Havekar",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/reforco%20havekar%20(3).png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/reforco havekar (3).png"
+    },
+    {
+        "id": "completo-scoiatel-riordain-png-riordain-png",
+        "pt": "Riordain",
+        "en": "Riordain",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/riordain.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/riordain.png"
+    },
+    {
+        "id": "completo-scoiatel-saesenthessis-png-saesenthessis-png",
+        "pt": "Saesenthessis",
+        "en": "Saesenthessis",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/saesenthessis.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/saesenthessis.png"
+    },
+    {
+        "id": "completo-scoiatel-toruviel-png-toruviel-png",
+        "pt": "Toruviel",
+        "en": "Toruviel",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/toruviel.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/toruviel.png"
+    },
+    {
+        "id": "completo-scoiatel-yaevinn-png-yaevinn-png",
+        "pt": "Yaevinn",
+        "en": "Yaevinn",
+        "faction": "scoiatael",
+        "image": "images/gwent/completo/scoiatel/yaevinn.png",
+        "group": "collection",
+        "sourcePath": "images/gwent/completo/scoiatel/yaevinn.png"
+    },
+    {
+        "id": "iniciais-iniciais-montros-chuva-png-chuva-png",
+        "pt": "Chuva Torrencial",
+        "en": "Chuva Torrencial",
+        "faction": "monsters",
+        "image": "images/gwent/iniciais/iniciais%20montros/Chuva.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais montros/Chuva.png"
+    },
+    {
+        "id": "iniciais-iniciais-montros-frio-png-frio-png",
+        "pt": "Frio Congelante",
+        "en": "Frio Congelante",
+        "faction": "monsters",
+        "image": "images/gwent/iniciais/iniciais%20montros/Frio.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais montros/Frio.png"
+    },
+    {
+        "id": "iniciais-iniciais-montros-nevoa-png-nevoa-png",
+        "pt": "Névoa Impenetrável",
+        "en": "Névoa Impenetrável",
+        "faction": "monsters",
+        "image": "images/gwent/iniciais/iniciais%20montros/nevoa.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais montros/nevoa.png"
+    },
+    {
+        "id": "iniciais-iniciais-montros-tempo-limpo-png-tempo-limpo-png",
+        "pt": "Tempo Limpo",
+        "en": "Tempo Limpo",
+        "faction": "monsters",
+        "image": "images/gwent/iniciais/iniciais%20montros/tempo%20limpo.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais montros/tempo limpo.png"
+    },
+    {
+        "id": "iniciais-iniciais-nilfi-carta-01-revisar-png-carta-01-revisar-png",
+        "pt": "Frio Congelante",
+        "en": "Frio Congelante",
+        "faction": "nilfgaard",
+        "image": "images/gwent/iniciais/iniciais%20nilfi/carta-01-REVISAR.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais nilfi/carta-01-REVISAR.png"
+    },
+    {
+        "id": "iniciais-iniciais-nilfi-carta-03-revisar-png-carta-03-revisar-png",
+        "pt": "Chuva Torrencial",
+        "en": "Chuva Torrencial",
+        "faction": "nilfgaard",
+        "image": "images/gwent/iniciais/iniciais%20nilfi/carta-03-REVISAR.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais nilfi/carta-03-REVISAR.png"
+    },
+    {
+        "id": "iniciais-iniciais-nilfi-nevoa-impenetravel-png-nevoa-impenetravel-png",
+        "pt": "Névoa Impenetrável",
+        "en": "Névoa Impenetrável",
+        "faction": "nilfgaard",
+        "image": "images/gwent/iniciais/iniciais%20nilfi/nevoa-impenetravel.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais nilfi/nevoa-impenetravel.png"
+    },
+    {
+        "id": "iniciais-iniciais-nilfi-tempo-claro-png-tempo-claro-png",
+        "pt": "Tempo claro",
+        "en": "Tempo claro",
+        "faction": "nilfgaard",
+        "image": "images/gwent/iniciais/iniciais%20nilfi/tempo-claro.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais nilfi/tempo-claro.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-balista-2-png-balista-2-png",
+        "pt": "Balista",
+        "en": "Balista",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/balista-2.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/balista-2.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-balista-png-balista-png",
+        "pt": "Balista",
+        "en": "Balista",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/balista.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/balista.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-chuva-torrencial-png-chuva-torrencial-png",
+        "pt": "Chuva Torrencial",
+        "en": "Chuva Torrencial",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/chuva-torrencial.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/chuva-torrencial.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-comando-dos-listras-azuis-png-comando-dos-listras-azuis-png",
+        "pt": "Comando dos Listras Azuis",
+        "en": "Comando dos Listras Azuis",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/comando-dos-listras-azuis.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/comando-dos-listras-azuis.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-dethmold-png-dethmold-png",
+        "pt": "Dethmold",
+        "en": "Dethmold",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/dethmold.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/dethmold.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-especialista-em-cerco-kaedweni-png-especialista-em-cerco-kaedweni-png",
+        "pt": "Especialista em Cerco Kaedweni",
+        "en": "Especialista em Cerco Kaedweni",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/especialista-em-cerco-kaedweni.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/especialista-em-cerco-kaedweni.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-frio-congelante-png-frio-congelante-png",
+        "pt": "Frio Congelante",
+        "en": "Frio Congelante",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/frio%20congelante.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/frio congelante.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-keira-metz-png-keira-metz-png",
+        "pt": "Keira Metz",
+        "en": "Keira Metz",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/keira-metz.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/keira-metz.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-medico-da-bandeira-de-dun-png-medico-da-bandeira-de-dun-png",
+        "pt": "Médico da Bandeira de Dun",
+        "en": "Médico da Bandeira de Dun",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/medico-da-bandeira-de-dun.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/medico-da-bandeira-de-dun.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-nevoa-png-nevoa-png",
+        "pt": "Névoa Impenetrável",
+        "en": "Névoa Impenetrável",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/nevoa.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/nevoa.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-pobre-infantaria-do-caralho-png-pobre-infantaria-do-caralho-png",
+        "pt": "Pobre Infantaria do Caralho",
+        "en": "Pobre Infantaria do Caralho",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/pobre-infantaria-do-caralho.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/pobre-infantaria-do-caralho.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-principe-stennis-png-principe-stennis-png",
+        "pt": "Príncipe Stennis",
+        "en": "Príncipe Stennis",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/principe-stennis.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/principe-stennis.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-sabrina-glevissig-png-sabrina-glevissig-png",
+        "pt": "Sabrina Glevissig",
+        "en": "Sabrina Glevissig",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/sabrina-glevissig.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/sabrina-glevissig.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-sheldon-skaggs-png-sheldon-skaggs-png",
+        "pt": "Sheldon Skaggs",
+        "en": "Sheldon Skaggs",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/sheldon-skaggs.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/sheldon-skaggs.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-siegfried-de-denesle-png-siegfried-de-denesle-png",
+        "pt": "Siegfried de Denesle",
+        "en": "Siegfried de Denesle",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/siegfried-de-denesle.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/siegfried-de-denesle.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-sile-de-tansarville-png-sile-de-tansarville-png",
+        "pt": "Síle de Tansarville",
+        "en": "Síle de Tansarville",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/sile-de-tansarville.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/sile-de-tansarville.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-soldado-raso-redaniano-2-png-soldado-raso-redaniano-2-png",
+        "pt": "Soldado Raso Redaniano",
+        "en": "Soldado Raso Redaniano",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/soldado-raso-redaniano-2.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/soldado-raso-redaniano-2.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-soldado-raso-redaniano-png-soldado-raso-redaniano-png",
+        "pt": "Soldado Raso Redaniano",
+        "en": "Soldado Raso Redaniano",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/soldado-raso-redaniano.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/soldado-raso-redaniano.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-tempo-claro-png-tempo-claro-png",
+        "pt": "Tempo claro",
+        "en": "Tempo claro",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/tempo-claro.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/tempo-claro.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-trabuco-png-trabuco-png",
+        "pt": "Trabuco",
+        "en": "Trabuco",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/trabuco.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/trabuco.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-trabuco1-png-trabuco1-png",
+        "pt": "Trabuco",
+        "en": "Trabuco",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/trabuco1.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/trabuco1.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-ves-png-ves-png",
+        "pt": "Ves",
+        "en": "Ves",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/ves.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/ves.png"
+    },
+    {
+        "id": "iniciais-iniciais-norte-yarpen-zigrin-png-yarpen-zigrin-png",
+        "pt": "Yarpen Zigrin",
+        "en": "Yarpen Zigrin",
+        "faction": "north",
+        "image": "images/gwent/iniciais/iniciais%20norte/yarpen-zigrin.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais norte/yarpen-zigrin.png"
+    },
+    {
+        "id": "iniciais-iniciais-scoiatel-carta-01-revisar-png-carta-01-revisar-png",
+        "pt": "Frio Congelante",
+        "en": "Frio Congelante",
+        "faction": "scoiatael",
+        "image": "images/gwent/iniciais/iniciais%20scoiatel/carta-01-REVISAR.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais scoiatel/carta-01-REVISAR.png"
+    },
+    {
+        "id": "iniciais-iniciais-scoiatel-carta-03-revisar-png-carta-03-revisar-png",
+        "pt": "Chuva Torrencial",
+        "en": "Chuva Torrencial",
+        "faction": "scoiatael",
+        "image": "images/gwent/iniciais/iniciais%20scoiatel/carta-03-REVISAR.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais scoiatel/carta-03-REVISAR.png"
+    },
+    {
+        "id": "iniciais-iniciais-scoiatel-nevoa-impenetravel-png-nevoa-impenetravel-png",
+        "pt": "Névoa Impenetrável",
+        "en": "Névoa Impenetrável",
+        "faction": "scoiatael",
+        "image": "images/gwent/iniciais/iniciais%20scoiatel/nevoa-impenetravel.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais scoiatel/nevoa-impenetravel.png"
+    },
+    {
+        "id": "iniciais-iniciais-scoiatel-tempo-claro-png-tempo-claro-png",
+        "pt": "Tempo Claro",
+        "en": "Tempo Claro",
+        "faction": "scoiatael",
+        "image": "images/gwent/iniciais/iniciais%20scoiatel/tempo-claro.png",
+        "group": "starting",
+        "sourcePath": "images/gwent/iniciais/iniciais scoiatel/tempo-claro.png"
+    }
+];
+
+const translations = {
+    pt: {
+        title: "Guia de Cartas de Gwent",
+        subtitle: "Sua coleção de cartas. Marque as que você já conseguiu!",
+        progress: "Progresso da coleção",
+        search: "Buscar carta...",
+        all: "Todas as cartas",
+        pending: "Cartas pendentes",
+        collected: "Cartas coletadas",
+        allFactions: "Todas as facções",
+        factions: {
+            neutral: "Neutras",
+            north: "Reinos do Norte",
+            nilfgaard: "Nilfgaard",
+            scoiatael: "Scoia'tael",
+            monsters: "Monstros",
+            skellige: "Skellige"
+        },
+        heading: "Coleção de cartas",
+        allGroups: "Todas as categorias",
+        starting: "Cartas iniciais",
+        collection: "Coleção completa",
+        obtained: "✓ OBTIDA",
+        missing: "AINDA NÃO OBTIDA",
+        footer: "Checklist de Gwent — The Witcher 3 Remastered.",
+        empty: "Nenhuma carta encontrada."
+    },
+    en: {
+        title: "Gwent Card Checklist",
+        subtitle: "Your card collection. Mark the cards you have collected!",
+        progress: "Collection progress",
+        search: "Search for a card...",
+        all: "All cards",
+        pending: "Missing cards",
+        collected: "Collected cards",
+        allFactions: "All factions",
+        factions: {
+            neutral: "Neutral",
+            north: "Northern Realms",
+            nilfgaard: "Nilfgaard",
+            scoiatael: "Scoia'tael",
+            monsters: "Monsters",
+            skellige: "Skellige"
+        },
+        heading: "Card collection",
+        allGroups: "All categories",
+        starting: "Starting cards",
+        collection: "Full collection",
+        obtained: "✓ COLLECTED",
+        missing: "NOT COLLECTED",
+        footer: "Gwent checklist — The Witcher 3 Remastered.",
+        empty: "No cards found."
+    }
+};
+
+const storageKey = "witcher-gwent-checklist-v1";
+
+let language = "pt";
+let collected = {};
+
+try {
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    collected = saved && typeof saved === "object" && !Array.isArray(saved)
+        ? saved
+        : {};
+} catch {
+    collected = {};
+}
+
+const grid = document.getElementById("cardGrid");
+const search = document.getElementById("search");
+const filter = document.getElementById("filter");
+const faction = document.getElementById("faction");
+const groupFilter = document.getElementById("groupFilter");
+
+function saveProgress() {
+    try {
+        localStorage.setItem(storageKey, JSON.stringify(collected));
+    } catch {
+        alert(language === "pt"
+            ? "Não foi possível salvar no navegador."
+            : "Could not save progress in this browser.");
+    }
+}
+
+const recentCardsKey = `${storageKey}-recent-cards`;
+let recentCardIds = [];
+try {
+    const recentSaved = JSON.parse(localStorage.getItem(recentCardsKey) || "[]");
+    if (Array.isArray(recentSaved)) recentCardIds = recentSaved.filter(id => typeof id === "string").slice(0, 12);
+} catch { recentCardIds = []; }
+function addRecentCard(id) {
+    recentCardIds = [id, ...recentCardIds.filter(existing => existing !== id)].slice(0, 12);
+    try { localStorage.setItem(recentCardsKey, JSON.stringify(recentCardIds)); } catch {}
+}
+function renderRecentFans() {
+    const left = document.getElementById("recentFanLeft");
+    const right = document.getElementById("recentFanRight");
+    if (!left || !right) return;
+    left.replaceChildren(); right.replaceChildren();
+    const recent = recentCardIds.map(id => cards.find(card => card.id === id)).filter(card => card && collected[card.id]).slice(0, 12);
+    const sides = [recent.slice(0, 6), recent.slice(6, 12)];
+    [left, right].forEach((container, sideIndex) => {
+        const list = sides[sideIndex];
+        list.forEach((card, index) => {
+            const img = document.createElement("img");
+            img.className = "recent-fan-card";
+            img.src = card.image || "";
+            img.alt = card[language] || card.pt || "Carta de Gwent";
+            img.loading = "lazy";
+            const n = list.length;
+            const offset = index - (n - 1) / 2;
+            img.style.transform = `translateX(calc(-50% + ${offset * 42}px)) rotate(${offset * 8}deg) translateY(${Math.abs(offset) * 3}px)`;
+            img.style.zIndex = String(index + 1);
+            container.appendChild(img);
+        });
+    });
+}
+
+function makeCardImage(card) {
+    if (card.image) {
+        return card.image;
+    }
+
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="300" height="400">
+            <rect width="300" height="400" rx="12" fill="${card.color || "#777777"}"/>
+            <text x="150" y="200" text-anchor="middle"
+                font-family="Georgia,serif" font-size="20"
+                fill="#fff4d7">GWENT</text>
+        </svg>
+    `;
+
+    return "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(svg);
+}
+function getVisibleCards() {
+    const query = search.value.trim().toLocaleLowerCase();
+    const selectedFilter = filter.value;
+    const selectedFaction = faction.value;
+    const selectedGroup = groupFilter.value;
+
+    return cards.filter(card => {
+        const name = card[language].toLocaleLowerCase();
+        const matchesSearch = name.includes(query);
+        const isCollected = Boolean(collected[card.id]);
+
+        const matchesStatus =
+            selectedFilter === "all" ||
+            (selectedFilter === "collected" && isCollected) ||
+            (selectedFilter === "pending" && !isCollected);
+
+        const sourcePath = (card.sourcePath || "").toLowerCase();
+        const isStartingCard = card.group === "starting";
+        const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+        const isNeutral = isStartingCard || isNeutralCollection;
+
+        const isNilfgaardNeutral =
+            sourcePath.includes("/iniciais/iniciais nilfi/") ||
+            sourcePath.includes("/completo/neutros/nilfi neutros/");
+
+        const neutralVariant =
+            sourcePath.includes("/neutros/nilfi neutros/") ||
+            sourcePath.includes("/iniciais/iniciais nilfi/")
+                ? "nilfgaard"
+                : sourcePath.includes("/neutros/monstros neutros/") ||
+                  sourcePath.includes("/iniciais/iniciais monstros/")
+                    ? "monsters"
+                    : sourcePath.includes("/neutros/norte neutros/") ||
+                      sourcePath.includes("/iniciais/iniciais norte/")
+                        ? "north"
+                        : sourcePath.includes("/neutros/elfos neutros/") ||
+                          sourcePath.includes("/iniciais/iniciais scoiatel/")
+                            ? "scoiatael"
+                            : null;
+
+        const matchesFaction =
+            selectedFaction === "all"
+                ? (!isNeutral || isNilfgaardNeutral)
+                : neutralVariant !== null
+                    ? neutralVariant === selectedFaction
+                    : card.faction === selectedFaction;
+
+        const matchesGroup =
+            selectedGroup === "all" || card.group === selectedGroup;
+
+        return (
+            matchesSearch &&
+            matchesStatus &&
+            matchesFaction &&
+            matchesGroup
+        );
+    });
+}
+function renderCards() {
+    const t = translations[language];
+    const query = search.value.trim().toLocaleLowerCase();
+    const selectedFilter = filter.value;
+    const selectedFaction = faction.value;
+    const selectedGroup = groupFilter.value;
+
+    const visibleCards = cards.filter(card => {
+        const name = card[language].toLocaleLowerCase();
+        const matchesSearch = name.includes(query);
+        const isCollected = Boolean(collected[card.id]);
+        const matchesStatus =
+            selectedFilter === "all" ||
+            (selectedFilter === "collected" && isCollected) ||
+            (selectedFilter === "pending" && !isCollected);
+        const matchesGroup = selectedGroup === "all" || card.group === selectedGroup;
+        const sourcePath = (card.sourcePath || "").toLowerCase();
+
+const isStartingCard = card.group === "starting";
+
+const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+
+const isNeutral = isStartingCard || isNeutralCollection;
+
+const neutralVariant =
+    sourcePath.includes("/neutros/nilfi neutros/") ||
+    sourcePath.includes("/iniciais/iniciais nilfi/")
+        ? "nilfgaard"
+        : sourcePath.includes("/neutros/monstros neutros/") ||
+          sourcePath.includes("/iniciais/iniciais monstros/")
+            ? "monsters"
+            : sourcePath.includes("/neutros/norte neutros/") ||
+              sourcePath.includes("/iniciais/iniciais norte/")
+                ? "north"
+                : sourcePath.includes("/neutros/elfos neutros/") ||
+                  sourcePath.includes("/iniciais/iniciais scoiatel/")
+                    ? "scoiatael"
+                    : null;
+
+const isNilfgaardNeutral =
+    sourcePath.includes("/iniciais/iniciais nilfi/") ||
+    sourcePath.includes("/completo/neutros/nilfi neutros/");
+
+const matchesFaction =
+    selectedFaction === "all"
+        ? (!isNeutral || isNilfgaardNeutral)
+        : neutralVariant !== null
+            ? neutralVariant === selectedFaction
+            : card.faction === selectedFaction;
+
+return matchesSearch && matchesStatus && matchesFaction && matchesGroup;
+    });
+
+    grid.innerHTML = "";
+
+    if (visibleCards.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = t.empty;
+        grid.appendChild(empty);
+        updateProgress();
+        updateToggleAllButton();
+        return;
+    }
+
+    visibleCards.forEach(card => {
+        const isCollected = Boolean(collected[card.id]);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "card" + (isCollected ? " collected" : "");
+        button.setAttribute("aria-pressed", String(isCollected));
+        button.setAttribute(
+            "aria-label",
+            card[language] + (isCollected ? ", " + t.obtained : ", " + t.missing)
+        );
+
+        const check = document.createElement("span");
+        check.className = "checkmark";
+        check.textContent = "✓";
+        check.setAttribute("aria-hidden", "true");
+
+        const img = document.createElement("img");
+        img.src = makeCardImage(card);
+        img.alt = language === "pt"
+            ? "Carta de Gwent: " + card.pt
+            : "Gwent card: " + card.en;
+        img.loading = "lazy";
+
+        const name = document.createElement("span");
+        name.className = "card-name";
+        name.textContent = card[language];
+
+        const status = document.createElement("span");
+        status.className = "card-status";
+        status.textContent = isCollected ? t.obtained : t.missing;
+
+        button.append(check, img, name, status);
+
+        button.addEventListener("click", () => {
+    const sourcePath = (card.sourcePath || "").toLowerCase();
+
+    const isStartingCard = card.group === "starting";
+    const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+    const isNeutral = isStartingCard || isNeutralCollection;
+
+    // Define o novo estado da carta
+    const newState = !collected[card.id];
+
+    if (isNeutral) {
+        // Identifica as versões da mesma carta pelo nome
+        const cardName = (card.pt || "").trim().toLocaleLowerCase();
+
+        const relatedCards = cards.filter(otherCard => {
+            const otherPath = (otherCard.sourcePath || "").toLowerCase();
+
+            const otherIsNeutral =
+                otherCard.group === "starting" ||
+                otherPath.includes("/completo/neutros/");
+
+            const otherName = (otherCard.pt || "").trim().toLocaleLowerCase();
+
+            return otherIsNeutral && otherName === cardName;
+        });
+
+        // Atualiza todas as versões da carta neutra
+        relatedCards.forEach(otherCard => {
+            collected[otherCard.id] = newState;
+        });
+    } else {
+        // Cartas exclusivas continuam com progresso independente
+        collected[card.id] = newState;
+    }
+
+    if (newState) addRecentCard(card.id);
+    saveProgress();
+    renderRecentFans();
+    renderCards();
+    renderRecentFans();
+});
+
+        grid.appendChild(button);
+    });
+
+    updateProgress();
+    updateToggleAllButton();
+}
+    const toggleAllButton = document.getElementById("toggleAllButton");
+
+function updateToggleAllButton() {
+    const visibleCards = getVisibleCards();
+
+    const allCollected =
+        visibleCards.length > 0 &&
+        visibleCards.every(card => Boolean(collected[card.id]));
+
+    toggleAllButton.textContent = allCollected
+        ? "Desmarcar todas"
+        : "Selecionar todas";
+
+    toggleAllButton.disabled = visibleCards.length === 0;
+}
+
+toggleAllButton.addEventListener("click", () => {
+    const visibleCards = getVisibleCards();
+
+    if (visibleCards.length === 0) return;
+
+    const allCollected =
+        visibleCards.every(card => Boolean(collected[card.id]));
+
+    const newState = !allCollected;
+
+    visibleCards.forEach(card => {
+        if (newState) addRecentCard(card.id);
+        const sourcePath = (card.sourcePath || "").toLowerCase();
+        const isNeutral =
+            card.group === "starting" ||
+            sourcePath.includes("/completo/neutros/");
+
+        if (isNeutral) {
+            const cardName = (card.pt || "").trim().toLocaleLowerCase();
+
+            cards.forEach(otherCard => {
+                const otherPath = (otherCard.sourcePath || "").toLowerCase();
+
+                const otherIsNeutral =
+                    otherCard.group === "starting" ||
+                    otherPath.includes("/completo/neutros/");
+
+                const otherName =
+                    (otherCard.pt || "").trim().toLocaleLowerCase();
+
+                if (otherIsNeutral && otherName === cardName) {
+                    collected[otherCard.id] = newState;
+                }
+            });
+        } else {
+            collected[card.id] = newState;
+        }
+    });
+
+    saveProgress();
+    renderRecentFans();
+    renderCards();
+    updateToggleAllButton();
+});
+
+function updateProgress() {
+    const t = translations[language];
+
+    const selectedFaction = faction.value;
+    const selectedGroup = groupFilter.value;
+
+    const visibleCards = cards.filter(card => {
+        const sourcePath = (card.sourcePath || "").toLowerCase();
+
+        const isStartingCard = card.group === "starting";
+        const isNeutralCollection = sourcePath.includes("/completo/neutros/");
+        const isNeutral = isStartingCard || isNeutralCollection;
+
+        const isNilfgaardNeutral =
+            sourcePath.includes("/iniciais/iniciais nilfi/") ||
+            sourcePath.includes("/completo/neutros/nilfi neutros/");
+
+        const neutralVariant =
+            sourcePath.includes("/neutros/nilfi neutros/") ||
+            sourcePath.includes("/iniciais/iniciais nilfi/")
+                ? "nilfgaard"
+                : sourcePath.includes("/neutros/monstros neutros/") ||
+                  sourcePath.includes("/iniciais/iniciais monstros/")
+                    ? "monsters"
+                    : sourcePath.includes("/neutros/norte neutros/") ||
+                      sourcePath.includes("/iniciais/iniciais norte/")
+                        ? "north"
+                        : sourcePath.includes("/neutros/elfos neutros/") ||
+                          sourcePath.includes("/iniciais/iniciais scoiatel/")
+                            ? "scoiatael"
+                            : null;
+
+        const matchesFaction =
+            selectedFaction === "all"
+                ? (!isNeutral || isNilfgaardNeutral)
+                : isNeutral
+                    ? neutralVariant === selectedFaction
+                    : card.faction === selectedFaction;
+
+        const matchesGroup =
+            selectedGroup === "all" || card.group === selectedGroup;
+
+        return matchesFaction && matchesGroup;
+    });
+
+    const total = visibleCards.length;
+
+    const count = visibleCards.filter(card =>
+        Boolean(collected[card.id])
+    ).length;
+
+    const percent = total ? Math.round(count / total * 100) : 0;
+
+    document.getElementById("progressLabel").textContent = t.progress;
+    document.getElementById("progressCount").textContent = count + " / " + total;
+    document.getElementById("progressPercent").textContent = percent + "%";
+    document.getElementById("progressFill").style.width = percent + "%";
+    document.getElementById("progressTrack").setAttribute("aria-valuenow", percent);
+}
+
+function setLanguage(nextLanguage) {
+    language = nextLanguage;
+    const t = translations[language];
+
+    document.documentElement.lang = language === "pt" ? "pt-BR" : "en";
+    const oldTitle = document.getElementById("title");
+    const oldSubtitle = document.getElementById("subtitle");
+    if (oldTitle) oldTitle.textContent = t.title;
+    if (oldSubtitle) oldSubtitle.textContent = t.subtitle;
+    document.getElementById("cardsHeading").textContent = t.heading;
+    const navLabels = language === "pt" ? ["Início", "Minha coleção", "Índice de cartas", "Guias"] : ["Home", "My Collection", "Card Index", "Guides"];
+    document.querySelectorAll("[data-page]").forEach((button, i) => button.textContent = navLabels[i]);
+    const menuCloseLabel = document.getElementById("menuCloseLabel");
+    if (menuCloseLabel) menuCloseLabel.textContent = language === "pt" ? "Opções" : "Options";
+    const pageText = language === "pt" ? { heroTitle:"GUIA DE GWENT", heroSubtitle:"Sua coleção, todas as cartas e o caminho para completar o baralho.", collection:"Minha coleção", tutorialButton:"Como jogar Gwent", indexTitle:"Índice de cartas", indexIntro:"Aprenda o objetivo da partida, os tipos de cartas e como montar sua estratégia. Esta seção será expandida com exemplos ilustrados.", basicsTitle:"O básico do jogo", basicsText:"Em Gwent, você disputa rodadas usando unidades, cartas especiais e habilidades. A força no tabuleiro, o momento de passar e o gerenciamento das cartas na mão fazem parte da estratégia.", typesTitle:"Tipos de cartas", typesText:"Unidades, heróis, cartas especiais, clima e cartas de líder têm funções diferentes. Mais adiante, cada categoria terá uma explicação própria e exemplos de cartas.", written:"Como conseguir todas as cartas", writtenText:"O passo a passo escrito para encontrar e conquistar todas as cartas de Gwent ficará reunido aqui.", video:"Guia em vídeo", videoText:"Os vídeos serão incorporados nesta mesma seção, junto do passo a passo escrito.", guides:"Guias", guidesIntro:"Guias adicionais de Gwent e de The Witcher 3 Remastered." } : { heroTitle:"GWENT GUIDE", heroSubtitle:"Your collection, every card, and the path to completing your deck.", collection:"My Collection", tutorialButton:"How to Play Gwent", indexTitle:"Card Index", indexIntro:"Learn the goal of a match, the card types, and how to build your strategy. This section will be expanded with illustrated examples.", basicsTitle:"The basics", basicsText:"In Gwent, you compete in rounds using units, special cards, and abilities. Board strength, knowing when to pass, and managing cards in your hand are all part of the strategy.", typesTitle:"Card types", typesText:"Units, heroes, special cards, weather, and leader cards have different functions. Each category will later have its own explanation and card examples.", written:"How to collect every card", writtenText:"A written walkthrough for finding and winning every Gwent card will be gathered here.", video:"Video guide", videoText:"Videos will be embedded in this same section alongside the written walkthrough.", guides:"Guides", guidesIntro:"Additional guides for Gwent and The Witcher 3 Remastered." }
+    for (const [id, value] of Object.entries({heroTitle:pageText.heroTitle, heroSubtitle:pageText.heroSubtitle, heroCollection:pageText.collection, heroTutorial:pageText.tutorialButton, indexTitle:pageText.indexTitle, indexIntro:pageText.indexIntro, indexBasicsTitle:pageText.basicsTitle, indexBasicsText:pageText.basicsText, indexTypesTitle:pageText.typesTitle, indexTypesText:pageText.typesText, writtenGuideTitle:pageText.written, writtenGuideText:pageText.writtenText, videoGuideTitle:pageText.video, videoGuideText:pageText.videoText, guidesTitle:pageText.guides, guidesIntro:pageText.guidesIntro})) { const el=document.getElementById(id); if(el) el.textContent=value; }
+    document.getElementById("footer").textContent = t.footer;
+    search.placeholder = t.search;
+
+    filter.options[0].textContent = t.all;
+    filter.options[1].textContent = t.pending;
+    filter.options[2].textContent = t.collected;
+
+    groupFilter.options[0].textContent = t.allGroups;
+    groupFilter.options[1].textContent = t.starting;
+    groupFilter.options[2].textContent = t.collection;
+
+    faction.options[0].textContent = t.allFactions;
+    [...faction.options].slice(1).forEach(option => {
+        option.textContent = t.factions[option.value];
+    });
+
+    document.querySelectorAll("[data-language]").forEach(button => {
+        button.classList.toggle("active", button.dataset.language === language);
+    });
+
+    const languageTrigger = document.getElementById("languageTrigger");
+    if (languageTrigger) languageTrigger.textContent = language === "pt" ? "🇧🇷 ▾" : "🇺🇸 ▾";
+
+    renderCards();
+}
+
+document.querySelectorAll("[data-language]").forEach(button => {
+    button.addEventListener("click", () => {
+        setLanguage(button.dataset.language);
+        const menu = document.getElementById("languageMenu");
+        const trigger = document.getElementById("languageTrigger");
+        if (menu) menu.hidden = true;
+        if (trigger) trigger.setAttribute("aria-expanded", "false");
+    });
+});
+const languageTrigger = document.getElementById("languageTrigger");
+const languageMenu = document.getElementById("languageMenu");
+if (languageTrigger && languageMenu) {
+    languageTrigger.addEventListener("click", () => {
+        languageMenu.hidden = !languageMenu.hidden;
+        languageTrigger.setAttribute("aria-expanded", String(!languageMenu.hidden));
+    });
+    document.addEventListener("click", event => {
+        if (!event.target.closest(".language-picker")) {
+            languageMenu.hidden = true;
+            languageTrigger.setAttribute("aria-expanded", "false");
+        }
+    });
+}
+
+const sidebarToggle = document.getElementById("sidebarToggle");
+const siteNav = document.getElementById("siteNav");
+const sidebarClose = document.getElementById("sidebarClose");
+const menuBackdrop = document.getElementById("menuBackdrop");
+
+function setMenuOpen(open) {
+    if (!siteNav || !sidebarToggle) return;
+    siteNav.classList.toggle("open", open);
+    sidebarToggle.setAttribute("aria-expanded", String(open));
+    if (menuBackdrop) menuBackdrop.classList.toggle("visible", open);
+    document.body.classList.toggle("menu-is-open", open);
+}
+if (sidebarToggle && siteNav) sidebarToggle.addEventListener("click", () => setMenuOpen(!siteNav.classList.contains("open")));
+if (sidebarClose) sidebarClose.addEventListener("click", () => setMenuOpen(false));
+if (menuBackdrop) menuBackdrop.addEventListener("click", () => setMenuOpen(false));
+document.addEventListener("keydown", event => { if (event.key === "Escape") setMenuOpen(false); });
+
+function showPage(page) {
+    const pages = { home: document.getElementById("homePage"), collection: document.getElementById("collectionPage"), index: document.getElementById("indexPage"), guides: document.getElementById("guidesPage") };
+    Object.entries(pages).forEach(([key, element]) => { if (element) element.hidden = key !== page; });
+    document.querySelectorAll("[data-page]").forEach(item => item.classList.toggle("active", item.dataset.page === page));
+    setMenuOpen(false);
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+document.querySelectorAll("[data-page]").forEach(button => button.addEventListener("click", () => showPage(button.dataset.page)));
+document.querySelectorAll("[data-open-page]").forEach(button => button.addEventListener("click", () => showPage(button.dataset.openPage)));
+
+search.addEventListener("input", renderCards);
+filter.addEventListener("change", renderCards);
+faction.addEventListener("change", renderCards);
+groupFilter.addEventListener("change", renderCards);
+
+setLanguage("pt");
+renderRecentFans();
+showPage("home");
+</script>
+</body>
+</html>
