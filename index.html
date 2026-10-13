@@ -354,6 +354,16 @@ body { background-color:#09090b; }
 @keyframes smokeDrift { from { transform:translate3d(-2%,1%,0) scale(1); } to { transform:translate3d(3%,-2%,0) scale(1.12); } }
 .hero-shade { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.12) 50%,rgba(0,0,0,.58)),linear-gradient(0deg,rgba(0,0,0,.62),transparent 45%,rgba(0,0,0,.22)); z-index:-1; }
 .hero-content { max-width:850px; padding:70px 24px; }
+    
+.home-title-image {
+    display: block;
+    width: min(100%, 560px);
+    max-height: 240px;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 24px;
+}
+    
 .hero-kicker { color:#c5a66a; letter-spacing:.28em; font-size:12px; }
 .hero-content h2 { font-size:clamp(38px,7vw,76px); margin:14px 0; text-shadow:0 4px 24px #000; }
 .hero-content>p:not(.hero-kicker) { color:#d0d0d0; font-size:clamp(16px,2vw,20px); line-height:1.6; }
@@ -821,8 +831,11 @@ button, select, input {
   <div class="recent-fan recent-fan-left" id="recentFanLeft" aria-label="Cartas selecionadas recentemente à esquerda"></div>
   <div class="recent-fan recent-fan-right" id="recentFanRight" aria-label="Cartas selecionadas recentemente à direita"></div>
   <div class="hero-content">
-    <p class="hero-kicker" id="heroKicker">THE WITCHER 3 REMASTERED</p>
-    <h2 id="heroTitle">GUIA DE GWENT</h2>
+    <img
+    src="images/site/logo.png"
+    alt="The Witcher 3 Remastered — Guia de Gwent"
+    class="home-title-image"
+>
     <p id="heroSubtitle">Sua coleção, todas as cartas e o caminho para completar o baralho.</p>
     <div class="hero-actions">
       <button type="button" data-open-page="collection" id="heroCollection">Minha coleção</button>
