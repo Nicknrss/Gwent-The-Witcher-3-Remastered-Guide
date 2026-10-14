@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carregando — Gwent</title>
+<script>
+(function () {
+    var base = "/gwent-the-witcher-3-remastered/";
+    var path = window.location.pathname;
+    var valid = [
+        base + "minha-colecao",
+        base + "indice",
+        base + "guias"
+    ];
+    if (valid.indexOf(path.replace(/\/+$/, "")) !== -1) {
+        try { sessionStorage.setItem("gwentRouteFallback", path); } catch (e) {}
+        window.location.replace(base);
+    } else {
+        window.location.replace(base);
+    }
+})();
+</script>
+</head>
+<body>Carregando o site de Gwent…</body>
+</html>
