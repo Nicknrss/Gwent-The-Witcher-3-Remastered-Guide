@@ -889,7 +889,7 @@ button, select, input {
     overflow-x: auto;
     overflow-y: hidden;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     padding: 4px;
     box-sizing: border-box;
     scrollbar-width: thin;
@@ -915,7 +915,11 @@ button, select, input {
 #indexPage .gwent-available-cards .gwent-card-choice small { display:none; }
 @media(max-width:800px) {
  #indexPage .gwent-available-cards { left:29%; top:63%; width:50%; height:20%; }
- #indexPage .gwent-available-cards .gwent-card-choice { flex-basis:20%; min-width:20%; width:20%#indexPage .gwent-available-cards .gwent-card-choice {
+ #indexPage .gwent-available-cards .gwent-card-choice {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+}
     flex: 0 0 auto;
     width: auto;
     min-width: 0;
@@ -953,7 +957,9 @@ button, select, input {
 #indexPage .gwent-deck-option input { accent-color:#c5a66a; flex:0 0 auto; }
 #indexPage .gwent-deck-option:has(input:checked) { border-color:#c5a66a; background:#30271b; }
 #indexPage .gwent-deck-option input:disabled { opacity:.6; }
-#indexPage .gwent-available-cards { margin-top:14px; width:100%; }
+#indexPage .gwent-available-cards {
+    margin-top: 0;
+}
 #indexPage .gwent-available-cards .gwent-practice-heading { margin-bottom:10px; }
 #indexPage .gwent-card-tray { grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
 #indexPage .gwent-card-choice img { width:100%; height:auto; aspect-ratio:2/3; object-fit:cover; }
