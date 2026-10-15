@@ -881,19 +881,53 @@ button, select, input {
 #indexPage .gwent-available-cards .gwent-practice-heading h4 { font-size:clamp(7px,.8vw,12px); line-height:1; color:#e7d2a3; text-shadow:0 1px 3px #000; }
 #indexPage .gwent-available-cards .gwent-deck-counter { font-size:clamp(6px,.55vw,9px); gap:2px; }
 #indexPage .gwent-available-cards .gwent-deck-counter strong { min-width:18px; height:18px; font-size:10px; }
-#indexPage .gwent-available-cards .gwent-card-tray { display: flex; flex: 1 1 auto; min-height: 0; gap: 4px; overflow-x: auto; overflow-y: hidden; align-items: center; padding: 3px 0; scrollbar-width: thin; }
-#indexPage .gwent-available-cards .gwent-card-choice { flex:0 0 13%; width:13%; min-width:13%; height:90%; max-height:90%; padding:0; display:block; overflow:hidden; background:transparent; border:0; border-radius:2px; box-shadow:none; }
+#indexPage .gwent-available-cards .gwent-card-tray {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: center;
+    padding: 4px 0;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+}
+#indexPage .gwent-available-cards .gwent-card-choice {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    height: 100%;
+    max-height: 100%;
+    aspect-ratio: 2 / 3;
+    box-sizing: border-box;
+    padding: 0;
+    display: block;
+    overflow: hidden;
+    background: transparent;
+    border: 1px solid #d5b56e;
+    border-radius: 2px;
+    box-shadow: none;
+}
 #indexPage .gwent-available-cards .gwent-card-choice img { display: block; height: 100%; width: 100%; min-height: 0; aspect-ratio: 2 / 3; object-fit: contain; }
 #indexPage .gwent-available-cards .gwent-card-choice strong { display:none; }
 #indexPage .gwent-available-cards .gwent-card-choice small { display:none; }
 @media(max-width:800px) {
  #indexPage .gwent-available-cards { left:29%; top:63%; width:50%; height:20%; }
- #indexPage .gwent-available-cards .gwent-card-choice { flex-basis:20%; min-width:20%; width:20%; }
+ #indexPage .gwent-available-cards .gwent-card-choice { flex-basis:20%; min-width:20%; width:20%#indexPage .gwent-available-cards .gwent-card-choice {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+}; }
  #indexPage .gwent-available-cards .gwent-practice-heading h4 { font-size:clamp(6px,1.5vw,10px); }
 }
 @media(max-width:480px) {
  #indexPage .gwent-available-cards { left:29%; top:63%; width:50%; height:20%; }
- #indexPage .gwent-available-cards .gwent-card-choice { flex-basis:25%; min-width:25%; width:25%; }
+ #indexPage .gwent-available-cards .gwent-card-choice {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+}
  #indexPage .gwent-available-cards .gwent-card-choice strong { font-size:6px; }
  #indexPage .gwent-available-cards .gwent-deck-counter strong { min-width:13px; height:13px; font-size:8px; }
 }
