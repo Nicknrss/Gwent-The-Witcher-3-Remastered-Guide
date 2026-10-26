@@ -92,18 +92,6 @@ This project is built using web technologies:
 - **GitHub** — Source code hosting and version control.
 - **GitHub Pages** — Website hosting.
 
-## 📂 Repository Structure
-
-The repository contains the website files, card images, and supporting resources.
-
-```text
-gwent-the-witcher-3-remastered/
-├── index.html
-├── README.md
-└── images/
-    ├── gwent/
-    └── site/
-        └── logo.png
 ```
 
 *This is a simplified overview of the project structure.*
